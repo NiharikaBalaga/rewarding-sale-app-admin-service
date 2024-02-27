@@ -12,22 +12,25 @@ function getRouter() {
     res.send({ message: 'Hello=world' });
   });
 
-  // Get Users
+  // TODO: check if the token validations should be in UserService or in AdminService
+  // Get users
   router.get('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
 
+  // Create user
+  router.post('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
+
   // Edit user
-  //router.put('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
+  router.put('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.updateUser]);
 
   // Delete user
-  //router.delete('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
+  router.delete('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.deleteUser]);
 
   // Block user
-  //router.put('/api/admin/user/block', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
+  router.put('/api/admin/user/block', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.blockUser]);
 
-  //TODO: Create newAdmin() and validateErrors
-  // Create new Admin
-  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.newAdmin]);
-  router.post('/api/admin', newAdmin(), validateErrors, AdminServiceController.newAdmin);
+  // TODO: Check how to create new admins, which fields should we use and how should we manage the token?
+  // Create new admin
+  router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.newAdmin]);
 
   return router;
 }

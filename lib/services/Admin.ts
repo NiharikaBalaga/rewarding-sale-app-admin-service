@@ -1,8 +1,8 @@
-import UserModel from "../Models/User";
-import UserTokenBlacklistModel from "../Models/User-Token-Blacklist";
 import type { Response } from "express";
-import AdminModel, {IAdmin} from "../Models/Admin";
+import AdminModel, {IAdmin} from "../DB/Models/Admin";
 import {httpCodes} from "../constants/http-status-code";
+import UserModel from "../DB/Models/User";
+import UserTokenBlacklistModel from "../DB/Models/User-Token-Blacklist";
 
 class AdminService{
 
