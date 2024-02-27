@@ -1,5 +1,7 @@
 import UserModel from '../DB/Models/User';
 import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
+import {httpCodes} from "../constants/http-status-code";
+import type { Response } from "express";
 
 class UserService{
 
@@ -26,6 +28,22 @@ class UserService{
       token: accessToken,
     });
     return blackListToken.save();
+  }
+
+  public static async getUsers(res: Response) {
+    try {
+      // Get users
+      const users = await UserModel.find({}).exec();
+
+      // send updated serialised user in response
+      return res.send({
+        message: 'Users Retrieved Successfully',
+        status: httpCodes.ok
+      });
+    } catch (error){
+      console.error('getUsers-error', error);
+      return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
+    }
   }
 
   private static async _update(id: string, updateUserDto: any) {
