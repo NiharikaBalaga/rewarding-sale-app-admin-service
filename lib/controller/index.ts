@@ -34,7 +34,7 @@ class AdminServiceController {
     public static updateUser(req: RequestInterferedByIsBlocked, res: Response) {
         const { id }  = req.currentUser;
         const { matchedData  } = req.body;
-        return UserService.updateUser(id, matchedData, res);
+        return UserService.updateUser(id, matchedData);
     }
 
     public static deleteUser(req: RequestInterferedByIsBlocked, res: Response) {
