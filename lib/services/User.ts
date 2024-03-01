@@ -57,48 +57,11 @@ class UserService{
       // send updated serialised user in response
       return res.send({
         message: 'Users Retrieved Successfully',
-        status: httpCodes.ok
+        status: httpCodes.ok,
+        users: users
       });
     } catch (error){
       console.error('getUsers-error', error);
-      return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
-    }
-  }
-
-  static async createUser(userId: string, userObject: any, res: Response) {
-    try {
-      // check if user already exists
-      const existingUser = await this.findById(userId);
-      if (existingUser) throw new Error('User With Given Id already exists');
-
-      // Create user
-      const user = new UserModel({ ...userObject  });
-      await user.save();
-
-      // send updated serialised user in response
-      return res.send({
-        message: 'User Created Successfully',
-        status: UserStatus.updated
-      });
-    } catch (error) {
-      // TODO handle any failure
-      console.error('createUser-error', error);
-      return res.status(httpCodes.serverError).send('Server Error, Please try again later');
-    }
-  }
-
-  public static async deleteUser(userId: mongoose.Types.ObjectId, res: Response) {
-    try {
-      // Delete post
-      await UserModel.deleteOne({ _id: userId }).exec();
-
-      // send updated serialised user in response
-      return res.send({
-        message: 'User Deleted Successfully',
-        status: UserStatus.deleted
-      });
-    } catch (error){
-      console.error('deleteUser-error', error);
       return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
     }
   }
@@ -119,7 +82,8 @@ class UserService{
       // send updated serialised user in response
       return res.send({
         message: 'User Blocked Successfully',
-        status: UserStatus.blocked
+        status: UserStatus.blocked,
+        updatedUser: updatedUser
       });
     } catch (error) {
       // TODO handle any failure
