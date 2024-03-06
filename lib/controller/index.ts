@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import {UserService} from "../services/User";
 import {AdminService} from "../services/Admin";
 import type { IUser } from '../DB/Models/User';
+import {PostService} from "../services/Post";
 
 interface RequestValidatedByPassport extends Request {
     user: {
@@ -37,6 +38,41 @@ class AdminServiceController {
         return UserService.blockUser(AdminServiceController.AdminId, res);
     }
 
+    public static getPosts(req: Request, res: Response) {
+        return PostService.getPosts(res);
+    }
+
+    /*public static updatePost(req: RequestInterferedByIsBlocked, res: Response) {
+        const { matchedData  } = req.body;
+        const id  = matchedData._id;
+        return PostService.updatePostAdmin(id, matchedData);
+    }*/
+    public static updatePostAdmin(req: Request, res: Response) {
+        const { matchedData  } = req.body;
+        const postId  = matchedData.postId;
+        console.log("updatePostAdmin");
+        console.log("matchedData: ", matchedData);
+        console.log("postId: ", postId);
+        console.log("----------------------------------------");
+        console.log("");
+        return PostService.updatePostAdmin(postId, matchedData, res);
+    }
+
+    /*public static blockPost(req: RequestInterferedByIsBlocked, res: Response) {
+        const { id }  = req.currentUser;
+        return UserService.blockUser(id, res);
+    }*/
+    public static blockPost(req: Request, res: Response) {
+        const { matchedData  } = req.body;
+        const postId  = matchedData.postId;
+        console.log("blockPost");
+        console.log("matchedData: ", matchedData);
+        console.log("postId: ", postId);
+        console.log("----------------------------------------");
+        console.log("");
+        return PostService.blockPost(postId, res);
+    }
+
     public static getAdmins(req: Request, res: Response) {
         return AdminService.getAdmins(res);
     }
@@ -46,10 +82,10 @@ class AdminServiceController {
         return AdminService.createAdmin(matchedData, res);
     }
 
-    /*public static updateUser(req: RequestInterferedByIsBlocked, res: Response) {
+    /*public static updateAdmin(req: RequestInterferedByIsBlocked, res: Response) {
         const { id }  = req.currentUser;
         const { matchedData  } = req.body;
-        return UserService.updateUser(id, matchedData);
+        return AdminService.updateAdmin(id, matchedData);
     }*/
     public static updateAdmin(req: Request, res: Response) {
         //const id  = "65e134474406939a9d20c77f";

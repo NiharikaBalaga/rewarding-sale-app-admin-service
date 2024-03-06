@@ -78,7 +78,7 @@ class AdminService{
             return res.send({
                 message: 'Admin Updated Successfully',
                 status: AdminStatus.updated,
-                updatedUser: updatedAdmin
+                updatedAdmin: updatedAdmin
             });
         } catch (error) {
             // TODO handle any failure

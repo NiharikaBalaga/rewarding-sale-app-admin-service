@@ -21,6 +21,18 @@ function getRouter() {
   //router.put('/api/admin/user/block', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.blockUser]);
   router.put('/api/admin/user/block', AdminServiceController.blockUser);
 
+  // Get Posts
+  //router.get('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
+  router.get('/api/admin/post', AdminServiceController.getPosts);
+
+  // Update Post
+  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.updateAdmin]);
+  router.put('/api/admin/post', AdminServiceController.updatePostAdmin);
+
+  // Block Post
+  //router.put('/api/admin/user/block', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.blockUser]);
+  router.put('/api/admin/post/block', AdminServiceController.blockPost);
+
   // Get Admins
   //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.getAdmins]);
   router.get('/api/admin/', AdminServiceController.getAdmins);
