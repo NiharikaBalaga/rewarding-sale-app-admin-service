@@ -23,7 +23,8 @@ interface RequestInterferedByIsBlocked extends RequestValidatedByPassport {
 class AdminServiceController {
 
     //Temporal Id - It must be removed when token is set up
-    static AdminId  = "65e14c9aaeba468189905fd2";
+    static AdminId  = "65e8ec7e9a564e67935a873c";
+    static UserId  = "65e8ec7e9a564e67935a873c";
 
     public static getUsers(req: Request, res: Response) {
         return UserService.getUsers(res);
@@ -35,7 +36,8 @@ class AdminServiceController {
     }*/
     public static blockUser(req: Request, res: Response) {
         //const id  = "65e13f12ff714f29188f0290";
-        return UserService.blockUser(AdminServiceController.AdminId, res);
+        const { userId } = req.body.matchedData;
+        return UserService.blockUser(userId, res);
     }
 
     public static getPosts(req: Request, res: Response) {
