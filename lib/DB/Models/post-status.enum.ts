@@ -8,6 +8,7 @@ export enum PostStatus {
     expired = 'POST_EXPIRED',
     updated = 'POST_UPDATED',
     notUpdated = 'POST_NOT_UPDATED',
+    notFound = 'POST_NOT_FOUND',
     // status if decision service flag the post
     // what if admin wants to remove the post
 }

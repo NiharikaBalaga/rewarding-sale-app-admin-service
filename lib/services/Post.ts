@@ -47,11 +47,19 @@ class PostService {
             const posts = await PostModel.find({}).exec();
 
             // send updated serialised post in response
-            return res.send({
-                message: 'Posts Retrieved Successfully',
-                status: httpCodes.ok,
-                posts: posts
-            });
+            if (posts){
+                return res.send({
+                    message: 'Posts Retrieved Successfully',
+                    status: httpCodes.ok,
+                    posts: posts
+                });
+            } else {
+                return res.send({
+                    message: 'Posts Retrieved without success, please check',
+                    status: PostStatus.notFound,
+                    posts: null
+                });
+            }
         } catch (error){
             console.error('getPosts-error', error);
             return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
@@ -72,11 +80,20 @@ class PostService {
               Aws.adminUpdatedEvent(updatedPost);*/
 
             // send updated serialised post in response
-            return res.send({
-                message: 'Post Updated Successfully',
-                status: PostStatus.updated,
-                updatedPost: updatedPost
-            });
+            if (updatedPost){
+                return res.send({
+                    message: 'Post Updated Successfully',
+                    status: PostStatus.updated,
+                    updatedPost: updatedPost
+                });
+            } else {
+                return res.send({
+                    message: 'Post updated without success, please check',
+                    status: PostStatus.notUpdated,
+                    updatedPost: null
+                });
+            }
+
         } catch (error) {
             // TODO handle any failure
             console.error('updatePost-error', error);
@@ -99,12 +116,19 @@ class PostService {
             /*if (updatedPost)
               Aws.userUpdatedEvent(updatedPost);*/
 
-            // send updated serialised post in response
-            return res.send({
-                message: 'Post Blocked Successfully',
-                status: PostStatus.blocked,
-                updatedPost: updatedPost
-            });
+            if (updatedPost){
+                return res.send({
+                    message: 'Post Blocked Successfully',
+                    status: PostStatus.blocked,
+                    updatedPost: updatedPost
+                });
+            } else {
+                return res.send({
+                    message: 'Post Blocked without success, please check',
+                    status: PostStatus.notUpdated,
+                    updatedPost: null
+                });
+            }
         } catch (error) {
             // TODO handle any failure
             console.error('blockPost-error', error);

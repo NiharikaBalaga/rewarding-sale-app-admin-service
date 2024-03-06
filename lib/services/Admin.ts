@@ -5,6 +5,7 @@ import UserModel from "../DB/Models/User";
 import UserTokenBlacklistModel from "../DB/Models/User-Token-Blacklist";
 import {AdminStatus} from "../DB/Models/admin-status.enum";
 import mongoose from "mongoose";
+import {UserStatus} from "../DB/Models/user-status.enum";
 
 class AdminService{
 
@@ -24,11 +25,19 @@ class AdminService{
             const admins = await AdminModel.find({}).exec();
 
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admins Retrieved Successfully',
-                status: httpCodes.ok,
-                admins: admins
-            });
+            if (admins){
+                return res.send({
+                    message: 'Admins Retrieved Successfully',
+                    status: httpCodes.ok,
+                    admins: admins
+                });
+            } else {
+                return res.send({
+                    message: 'Admins Retrieved without success, please check',
+                    status: AdminStatus.notUpdated,
+                    admins: null
+                });
+            }
         } catch (error){
             console.error('getAdmins-error', error);
             return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
@@ -44,11 +53,19 @@ class AdminService{
             await newAdmin.save();
 
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admin created Successfully',
-                status: AdminStatus.created,
-                newAdmin: newAdmin
-            });
+            if (newAdmin){
+                return res.send({
+                    message: 'Admin created Successfully',
+                    status: AdminStatus.created,
+                    newAdmin: newAdmin
+                });
+            } else {
+                return res.send({
+                    message: 'Admin created without success, please check',
+                    status: AdminStatus.notCreated,
+                    newAdmin: null
+                });
+            }
         } catch (logoutError){
             console.error('createAdmin-AdminService', logoutError);
             return  res.sendStatus(httpCodes.serverError);
@@ -75,11 +92,19 @@ class AdminService{
               Aws.adminUpdatedEvent(updatedAdmin);*/
 
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admin Updated Successfully',
-                status: AdminStatus.updated,
-                updatedAdmin: updatedAdmin
-            });
+            if (updatedAdmin){
+                return res.send({
+                    message: 'Admin Updated Successfully',
+                    status: AdminStatus.updated,
+                    updatedAdmin: updatedAdmin
+                });
+            } else {
+                return res.send({
+                    message: 'Admin Updated without success, please check',
+                    status: AdminStatus.notUpdated,
+                    updatedAdmin: null
+                });
+            }
         } catch (error) {
             // TODO handle any failure
             console.error('updateAdmin-error', error);
@@ -102,11 +127,19 @@ class AdminService{
               Aws.adminUpdatedEvent(updatedAdmin);*/
 
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admin Blocked Successfully',
-                status: AdminStatus.blocked,
-                updatedAdmin: updatedAdmin
-            });
+            if (updatedAdmin){
+                return res.send({
+                    message: 'Admin Blocked Successfully',
+                    status: AdminStatus.blocked,
+                    updatedAdmin: updatedAdmin
+                });
+            } else {
+                return res.send({
+                    message: 'Admin Blocked without success, please check',
+                    status: AdminStatus.notUpdated,
+                    updatedAdmin: null
+                });
+            }
         } catch (error) {
             // TODO handle any failure
             console.error('blockAdmin-error', error);
@@ -123,11 +156,19 @@ class AdminService{
 
 
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admin Deleted Successfully',
-                status: AdminStatus.deleted,
-                adminDeleted: adminDeleted
-            });
+            if (adminDeleted){
+                return res.send({
+                    message: 'Admin Deleted Successfully',
+                    status: AdminStatus.deleted,
+                    adminDeleted: adminDeleted
+                });
+            } else {
+                return res.send({
+                    message: 'Admin Deleted without success, please check',
+                    status: AdminStatus.notDeleted,
+                    adminDeleted: null
+                });
+            }
         } catch (error){
             console.error('deleteAdmin-error', error);
             return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
