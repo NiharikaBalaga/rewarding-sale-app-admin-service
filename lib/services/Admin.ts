@@ -5,6 +5,7 @@ import UserModel from "../DB/Models/User";
 import UserTokenBlacklistModel from "../DB/Models/User-Token-Blacklist";
 import {AdminStatus} from "../DB/Models/admin-status.enum";
 import mongoose from "mongoose";
+import bcrypt from 'bcrypt';
 
 class AdminService{
 
@@ -54,10 +55,12 @@ class AdminService{
                 });
             }
 
+            // Hash the password
+            const hashedPassword = await bcrypt.hash(adminObject.password, 10); // 10 is the salt rounds
+            const newAdminData = { ...adminObject, password: hashedPassword };
+
             // Create new Admin
-            const newAdmin = new AdminModel({
-                ...adminObject,
-            });
+            const newAdmin = new AdminModel(newAdminData);
             await newAdmin.save();
 
             // send updated serialised admin in response
