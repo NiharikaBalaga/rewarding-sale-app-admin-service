@@ -37,6 +37,23 @@ class AdminService{
 
     public static async createAdmin(adminObject: Partial<IAdmin>, res: Response) {
         try {
+            // Check that the email doesn't exist in db
+            const existingAdmin = await AdminModel.findOne({ email: adminObject.email });
+            if (existingAdmin) {
+                return res.status(httpCodes.conflict).send({
+                    message: 'Email already exists',
+                    status: httpCodes.conflict
+                });
+            }
+
+            // Add a password and hash it
+            if (!adminObject.password) {
+                return res.status(httpCodes.badRequest).send({
+                    message: 'Password is required',
+                    status: httpCodes.badRequest
+                });
+            }
+
             // Create new Admin
             const newAdmin = new AdminModel({
                 ...adminObject,

@@ -4,16 +4,15 @@ import type { Document, Model } from 'mongoose';
 export interface IAdmin extends Document {
     phoneNumber: string,
     email: string,
+    password: string,
     firstName: string,
     lastName: string,
-    signedUp: boolean,
     isBlocked: boolean,
 }
 
 const AdminSchema: mongoose.Schema = new mongoose.Schema({
     phoneNumber: {
         type: String,
-        required: true,
         match: /^\d{3}-\d{3}-\d{4}$/,
         unique: true,
         index: true,
@@ -21,17 +20,17 @@ const AdminSchema: mongoose.Schema = new mongoose.Schema({
 
     email: {
         type: String,
+        required:true
+    },
+    password: {
+        type: String,
+        required:true
     },
     firstName: {
         type: String,
     },
     lastName: {
         type: String,
-    },
-
-    signedUp: {
-        type: Boolean,
-        default: false
     },
 
     isBlocked: {
