@@ -4,13 +4,12 @@ import {AdminService} from "../services/Admin";
 
 async function isBlocked(req: Request, res: Response, next: NextFunction) {
     try {
-        // TODO: How to get the admin from the req object to see if the admin is blocked
         // @ts-ignore
-        const adminId = req.user?.userId;
+        const adminEmail = req.user?.email;
 
-        if (!adminId) return res.sendStatus(401);
+        if (!adminEmail) return res.sendStatus(401);
 
-        const admin = await AdminService.findById(adminId);
+        const admin = await AdminService.findAdminByEmail(adminEmail);
 
         if (!admin || admin.isBlocked) return res.sendStatus(401);
 
@@ -25,7 +24,6 @@ async function isBlocked(req: Request, res: Response, next: NextFunction) {
 
 async function tokenBlacklist(req: Request, res: Response, next: NextFunction) {
     try {
-        // TODO: How to get the admin from the req object to check the token
         // @ts-ignore
         const accessToken = req.user?.accessToken;
 
@@ -39,7 +37,6 @@ async function tokenBlacklist(req: Request, res: Response, next: NextFunction) {
         res.sendStatus(500);
     }
 }
-
 
 export  {
     isBlocked,

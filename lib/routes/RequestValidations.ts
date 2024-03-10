@@ -2,6 +2,22 @@ import { body, matchedData, validationResult } from 'express-validator';
 import type { NextFunction, Request, Response } from 'express';
 import { httpCodes } from '../constants/http-status-code';
 
+const adminLogin = () => {
+    return  [
+        body('email')
+            .trim()
+            .notEmpty()
+            .escape()
+            .isEmail()
+            .withMessage('Must be a valid email'),
+        body('password')
+            .trim()
+            .notEmpty()
+            .escape()
+            .isString()
+            .withMessage('Password is required')];
+};
+
 const newAdmin = () => {
     return [
         body('email')
@@ -10,18 +26,85 @@ const newAdmin = () => {
             .escape()
             .isEmail()
             .withMessage('Must be a valid email'),
+        body('password')
+            .trim()
+            .notEmpty()
+            .escape()
+            .isString()
+            .withMessage('Password is required'),
+        body('phoneNumber')
+            .trim()
+            .notEmpty()
+            .escape()
+            .matches(/^\d{3}-\d{3}-\d{4}$/)
+            .withMessage('Phone number must be in the format xxx-xxx-xxxx')];
+};
+
+const updateAdmin = () => {
+    return [
+        body('adminId')
+            .trim()
+            .notEmpty()
+            .escape()
+            .isString()
+            .withMessage('Admin ID is required'),
+        body('email')
+            .trim()
+            .optional()
+            .escape()
+            .isEmail()
+            .withMessage('Must be a valid email'),
+        body('phoneNumber')
+            .trim()
+            .optional()
+            .escape()
+            .matches(/^\d{3}-\d{3}-\d{4}$/)
+            .withMessage('Phone number must be in the format xxx-xxx-xxxx'),
+        body('password')
+            .trim()
+            .optional()
+            .escape()
+            .isString(),
         body('firstName')
             .trim()
-            .notEmpty()
+            .optional()
             .escape()
-            .isString()
-            .withMessage('First Name is required'),
+            .isString(),
         body('lastName')
+            .trim()
+            .optional()
+            .escape()
+            .isString()];
+};
+
+const blockDeleteAdmin = () => {
+    return [
+        body('adminId')
             .trim()
             .notEmpty()
             .escape()
             .isString()
-            .withMessage('Last Name is required')];
+            .withMessage('Admin ID is required')];
+};
+
+const blockUser = () => {
+    return [
+        body('userId')
+            .trim()
+            .notEmpty()
+            .escape()
+            .isString()
+            .withMessage('User ID is required')];
+};
+
+const blockUpdatePost = () => {
+    return [
+        body('postId')
+            .trim()
+            .notEmpty()
+            .escape()
+            .isString()
+            .withMessage('Post ID is required')];
 };
 
 const validateErrors = (req: Request, res: Response, next: NextFunction) => {
@@ -38,4 +121,4 @@ const validateErrors = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-export { validateErrors, newAdmin };
+export { adminLogin, validateErrors, newAdmin, updateAdmin, blockDeleteAdmin, blockUser, blockUpdatePost };

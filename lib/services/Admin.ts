@@ -6,6 +6,8 @@ import UserTokenBlacklistModel from "../DB/Models/User-Token-Blacklist";
 import {AdminStatus} from "../DB/Models/admin-status.enum";
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
+import AdminTokenBlacklistModel from "../DB/Models/Admin-Token-Blacklist";
+import {PostStatus} from "../DB/Models/post-status.enum";
 
 class AdminService{
 
@@ -14,8 +16,14 @@ class AdminService{
     }
 
     public static async tokenInBlackList(accessToken: string) {
-        return UserTokenBlacklistModel.findOne({
+        return AdminTokenBlacklistModel.findOne({
             token: accessToken
+        });
+    }
+
+    static async findAdminByEmail(email: string) {
+        return AdminModel.findOne({
+            email
         });
     }
 
@@ -25,11 +33,19 @@ class AdminService{
             const admins = await AdminModel.find({}).exec();
 
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admins Retrieved Successfully',
-                status: httpCodes.ok,
-                admins: admins
-            });
+            if (admins){
+                return res.send({
+                    message: 'Admins Retrieved Successfully',
+                    status: httpCodes.ok,
+                    admins: admins
+                });
+            } else {
+                return res.send({
+                    message: 'Admins Retrieved without success, please check',
+                    status: httpCodes.notFound,
+                    admins: null
+                });
+            }
         } catch (error){
             console.error('getAdmins-error', error);
             return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
@@ -95,11 +111,19 @@ class AdminService{
               Aws.adminUpdatedEvent(updatedAdmin);*/
 
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admin Updated Successfully',
-                status: AdminStatus.updated,
-                updatedUser: updatedAdmin
-            });
+            if (updatedAdmin){
+                return res.send({
+                    message: 'Admin Updated Successfully',
+                    status: AdminStatus.updated,
+                    updatedAdmin: updatedAdmin
+                });
+            } else {
+                return res.send({
+                    message: 'Admin Updated without success, please check',
+                    status: AdminStatus.notUpdated,
+                    updatedAdmin: null
+                });
+            }
         } catch (error) {
             // TODO handle any failure
             console.error('updateAdmin-error', error);
@@ -122,11 +146,19 @@ class AdminService{
               Aws.adminUpdatedEvent(updatedAdmin);*/
 
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admin Blocked Successfully',
-                status: AdminStatus.blocked,
-                updatedAdmin: updatedAdmin
-            });
+            if (updatedAdmin){
+                return res.send({
+                    message: 'Admin Blocked Successfully',
+                    status: AdminStatus.blocked,
+                    updatedAdmin: updatedAdmin
+                });
+            } else {
+                return res.send({
+                    message: 'Admin Blocked without success, please check',
+                    status: AdminStatus.notUpdated,
+                    updatedAdmin: updatedAdmin
+                });
+            }
         } catch (error) {
             // TODO handle any failure
             console.error('blockAdmin-error', error);
@@ -136,18 +168,23 @@ class AdminService{
 
     public static async deleteAdmin(adminId: mongoose.Types.ObjectId, res: Response) {
         try {
-            console.log("deleteAdmin service");
-            console.log("adminId: ", adminId);
             // Delete admin
             const adminDeleted = await AdminModel.deleteOne({ _id: adminId }).exec();
 
-
             // send updated serialised admin in response
-            return res.send({
-                message: 'Admin Deleted Successfully',
-                status: AdminStatus.deleted,
-                adminDeleted: adminDeleted
-            });
+            if (adminDeleted){
+                return res.send({
+                    message: 'Admin Deleted Successfully',
+                    status: AdminStatus.deleted,
+                    adminDeleted: adminDeleted
+                });
+            } else {
+                return res.send({
+                    message: 'Admin Deleted without success, please check',
+                    status: AdminStatus.notDeleted,
+                    adminDeleted: null
+                });
+            }
         } catch (error){
             console.error('deleteAdmin-error', error);
             return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');

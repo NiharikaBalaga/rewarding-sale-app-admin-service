@@ -1,8 +1,15 @@
 import express from 'express';
-import passport from "passport";
-import {isBlocked, tokenBlacklist} from "../middlewares";
-import {AdminServiceController} from "../controller";
-import {newAdmin, validateErrors} from "./RequestValidations";
+import passport from '../strategies/passport-strategy';
+import { isBlocked, tokenBlacklist } from '../middlewares';
+import { AdminServiceController } from "../controller";
+import {
+  adminLogin,
+  blockDeleteAdmin, blockUpdatePost,
+  blockUser,
+  newAdmin,
+  updateAdmin,
+  validateErrors
+} from "./RequestValidations";
 
 const router = express.Router();
 
@@ -12,35 +19,43 @@ function getRouter() {
     res.send({ message: 'Hello=world' });
   });
 
-  // TODO: check if the token validations should be in UserService or in AdminService
+  // Admin Login
+  //Todo jacobo: Check the error of the first commented line
+  //router.post('/api/admin/auth', [adminLogin(), validateErrors, AdminServiceController.verifyAdmin]);
+  router.post('/api/admin/auth', [...adminLogin(), validateErrors, AdminServiceController.verifyAdmin]);
+  //router.post('/api/admin/auth', AdminServiceController.verifyAdmin);
+
   // Get Users
-  //router.get('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
-  router.get('/api/admin/user', AdminServiceController.getUsers);
+  router.get('/api/admin/user', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
 
   // Block User
-  //router.put('/api/admin/user/block', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.blockUser]);
-  router.put('/api/admin/user/block', AdminServiceController.blockUser);
+  router.put('/api/admin/user/block', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, blockUser(), validateErrors, AdminServiceController.blockUser]);
+
+  // Get Posts
+  router.get('/api/admin/post', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getPosts]);
+
+  // Update Post
+  router.put('/api/admin/post/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, blockUpdatePost(), validateErrors, AdminServiceController.updatePostAdmin]);
+
+  // Block Post
+  router.put('/api/admin/post/block', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, blockUpdatePost(), validateErrors, AdminServiceController.blockPost]);
 
   // Get Admins
-  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.getAdmins]);
-  router.get('/api/admin/', AdminServiceController.getAdmins);
+  router.get('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, AdminServiceController.getAdmins]);
 
-  // TODO: Check how to create new admins, which fields should we use and how should we manage the token?
   // Create Admin
-  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.newAdmin]);
+  //Todo jacobo: Check how to handle the admin creation
+  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.createAdmin]);
   router.post('/api/admin/', AdminServiceController.createAdmin);
 
   // Update Admin
-  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.updateAdmin]);
-  router.put('/api/admin/', AdminServiceController.updateAdmin);
+  router.put('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, updateAdmin(), validateErrors, AdminServiceController.updateAdmin]);
 
   // Block Admin
-  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.newAdmin]);
-  router.put('/api/admin/block', AdminServiceController.blockAdmin);
+  router.put('/api/admin/block', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, blockDeleteAdmin(), validateErrors, AdminServiceController.blockAdmin]);
 
   // Delete Admin
-  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, newAdmin(), validateErrors, AdminServiceController.newAdmin]);
-  router.delete('/api/admin/', AdminServiceController.deleteAdmin);
+  router.delete('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isBlocked, tokenBlacklist, blockDeleteAdmin(), validateErrors, AdminServiceController.deleteAdmin]);
 
   return router;
 }

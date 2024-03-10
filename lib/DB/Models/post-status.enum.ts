@@ -6,6 +6,8 @@ export enum PostStatus {
     blocked = 'POST_BLOCKED',
     duplicate = 'POST_DUPLICATE', // If the post is duplicate of another post
     expired = 'POST_EXPIRED',
+    updated = 'POST_UPDATED',
+    notUpdated = 'POST_NOT_UPDATED',
     // status if decision service flag the post
     // what if admin wants to remove the post
 }
