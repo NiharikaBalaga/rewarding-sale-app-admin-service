@@ -93,6 +93,8 @@ class AdminService{
       });
 
       if (admin) {
+        if (!admin.signedUp)
+          return res.status(httpCodes.badRequest).send('Please Setup Account Before Login');
         const passwordMatches = await argon2.verify(
           admin.password,
           password

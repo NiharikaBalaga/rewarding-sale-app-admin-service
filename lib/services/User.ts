@@ -51,7 +51,14 @@ class UserService{
   public static async getUsers(res: Response) {
     try {
       // Get users
-      return UserModel.find({}).exec();
+      const users = await UserModel.find({}).exec();
+
+      // send updated serialised user in response
+      return res.send({
+        message: 'Users Retrieved Successfully',
+        status: httpCodes.ok,
+        users: users
+      });
     } catch (error){
       console.error('getUsers-error', error);
       return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
