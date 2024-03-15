@@ -24,7 +24,11 @@ async function bootstrap() {
     'aws_sqs_queue_url',
     'aws_sqs_queue_name',
     'aws_sqs_access_key_id',
-    'aws_sqs_secret_access_key'
+    'aws_sqs_secret_access_key',
+    'JWT_SUPER_ADMIN_SECRET',
+    'aws_sns_access_key_id',
+    'aws_sns_secret_access_key',
+    'JWT_ADMIN_SECRET'
   ];
 
   const missingVariables = requiredEnvVariables.filter(variable => {

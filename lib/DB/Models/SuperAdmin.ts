@@ -1,17 +1,16 @@
 import mongoose from 'mongoose';
 import type { Document, Model } from 'mongoose';
 
-export interface IAdmin extends Document {
+export interface ISuperAdmin extends Document {
   phoneNumber: string,
   email: string,
-  password: string
+  password: string,
   firstName: string,
   lastName: string,
-  signedUp: boolean,
   isBlocked: boolean,
 }
 
-const AdminSchema: mongoose.Schema = new mongoose.Schema({
+const SuperAdminSchema: mongoose.Schema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     required: true,
@@ -21,6 +20,8 @@ const AdminSchema: mongoose.Schema = new mongoose.Schema({
   },
 
   email: {
+    unique: true,
+    index: true,
     type: String,
   },
 
@@ -28,19 +29,12 @@ const AdminSchema: mongoose.Schema = new mongoose.Schema({
     type: String,
   },
 
-
   firstName: {
     type: String,
   },
 
-
   lastName: {
     type: String,
-  },
-
-  signedUp: {
-    type: Boolean,
-    default: false
   },
 
   isBlocked: {
@@ -48,11 +42,11 @@ const AdminSchema: mongoose.Schema = new mongoose.Schema({
     default: false
   },
 }, {
-  collection: 'Admin',
+  collection: 'SuperAdmin',
   timestamps: true,
   id: true,
 });
 
-const AdminModel: Model<IAdmin> = mongoose.model<IAdmin>('Admin', AdminSchema);
+const SuperAdminModel: Model<ISuperAdmin> = mongoose.model<ISuperAdmin>('SuperAdmin', SuperAdminSchema);
 
-export default AdminModel;
+export default SuperAdminModel;

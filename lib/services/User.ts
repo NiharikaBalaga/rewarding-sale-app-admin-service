@@ -1,9 +1,8 @@
-import UserModel, {IUser} from '../DB/Models/User';
+import UserModel from '../DB/Models/User';
+import { httpCodes } from '../constants/http-status-code';
+import type { Response } from 'express';
+import { UserStatus } from '../DB/Models/user-status.enum';
 import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
-import {httpCodes} from "../constants/http-status-code";
-import type { Response } from "express";
-import {UserStatus} from "../DB/Models/user-status.enum";
-import mongoose from "mongoose";
 
 
 class UserService{
@@ -41,8 +40,8 @@ class UserService{
 
   private static async _update(id: string, updateUserDto: any) {
     return UserModel
-        .findByIdAndUpdate(id, updateUserDto, { new: true })
-        .exec();
+      .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .exec();
   }
 
   static async updateUser(userId: string, updateDto: any) {
@@ -76,7 +75,7 @@ class UserService{
 
       // TODO: Check how to implement Aws
       // SNS event
-      /*if (updatedUser)
+      /* if (updatedUser)
         Aws.userUpdatedEvent(updatedUser);*/
 
       // send updated serialised user in response
@@ -91,6 +90,8 @@ class UserService{
       return res.status(httpCodes.serverError).send('Server Error, Please try again later');
     }
   }
+
+  // TODO add unblock user
 }
 
 
