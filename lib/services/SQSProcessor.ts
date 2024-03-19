@@ -1,10 +1,10 @@
 import { Events } from './events.enum';
 import { UserService } from './User';
-import type mongoose from "mongoose";
-import {PostDLLService} from "./PostDLL";
-import {IPostDLL} from "../DB/Models/Post-DLL";
-import {PostService} from "./Post";
-import {IPost} from "../DB/Models/Post";
+import type mongoose from 'mongoose';
+import { PostDLLService } from './PostDLL';
+import type { IPostDLL } from '../DB/Models/Post-DLL';
+import { PostService } from './Post';
+import type { IPost } from '../DB/Models/Post';
 
 class SQSProcessorService {
   static async ProcessSqsMessage(messages: any[]) {
@@ -41,7 +41,7 @@ class SQSProcessorService {
       updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL
     } = parsedMessage;
     console.log(EVENT_TYPE, user, userId, token, updatedUser, post, postId,
-        updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL);
+      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL);
     switch (EVENT_TYPE) {
       case Events.userCreatedByPhone:
         return this._handleUserCreationByPhone(user, userId);

@@ -1,33 +1,33 @@
 import type { Secret } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
-import * as argon2 from 'argon2';
-import { UserService } from './User';
-import type { Response } from 'express';
-import { httpCodes } from '../constants/http-status-code';
-
 
 class TokenService {
+  public static async getAdminToken(userId: string, phoneNumber: string) {
+    const jwtAccessSecretKey: Secret = process.env.JWT_ADMIN_SECRET || 'jlndoqwjwp9qjdlasjdnaajadgjasdgdsgdsh';
+    const [accessToken] = await Promise.all([jwt.sign({
+      userId, phoneNumber
+    }, jwtAccessSecretKey, {
+      expiresIn: '1d',
+    })]);
+    return {
+      accessToken,
+    };
+  }
 
-    public static async getTokens(email: string) {
-        const jwtAccessSecretKey: Secret = process.env.JWT_ACCESS_SECRET || '';
-        const jwtRefreshSecretKey: Secret = process.env.JWT_REFRESH_SECRET || '';
-        const [accessToken, refreshToken] = await Promise.all([jwt.sign({
-            email: email
-        }, jwtAccessSecretKey, {
-            expiresIn: '30d',
-        }), jwt.sign({
-            email: email
-        }, jwtRefreshSecretKey, {
-            expiresIn: '150d',
-        })]);
-        return {
-            accessToken,
-            refreshToken
-        };
-    }
+  public static async getSuperAdminToken(userId: string, phoneNumber: string) {
+    const jwtAccessSecretKey: Secret = process.env.JWT_SUPER_ADMIN_SECRET || 'asdahsdasjdgasdgsadgashdgasjdambdkuqwhewuqeh';
+    const [accessToken] = await Promise.all([jwt.sign({
+      userId, phoneNumber
+    }, jwtAccessSecretKey, {
+      expiresIn: '1h',
+    })]);
+    return {
+      accessToken,
+    };
+  }
+
 }
 
-
 export {
-    TokenService
+  TokenService
 };

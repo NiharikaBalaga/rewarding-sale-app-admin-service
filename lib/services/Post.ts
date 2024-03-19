@@ -1,13 +1,13 @@
 import type { IPost } from '../DB/Models/Post';
 import PostModel from '../DB/Models/Post';
 import type mongoose from 'mongoose';
-import type {Response} from "express";
+import type { Response } from "express";
 import UserModel from "../DB/Models/User";
-import {httpCodes} from "../constants/http-status-code";
-import {IAdmin} from "../DB/Models/Admin";
-import {AdminStatus} from "../DB/Models/admin-status.enum";
-import {PostStatus} from "../DB/Models/post-status.enum";
-import {UserStatus} from "../DB/Models/user-status.enum";
+import { httpCodes } from "../constants/http-status-code";
+import { IAdmin } from "../DB/Models/Admin";
+import { AdminStatus } from "../DB/Models/admin-status.enum";
+import { PostStatus } from "../DB/Models/post-status.enum";
+import { UserStatus } from "../DB/Models/user-status.enum";
 
 class PostService {
 
@@ -47,7 +47,7 @@ class PostService {
             const posts = await PostModel.find({}).exec();
 
             // send updated serialised post in response
-            if (posts){
+            if (posts) {
                 return res.send({
                     message: 'Posts Retrieved Successfully',
                     status: httpCodes.ok,
@@ -60,9 +60,9 @@ class PostService {
                     posts: null
                 });
             }
-        } catch (error){
+        } catch (error) {
             console.error('getPosts-error', error);
-            return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
+            return res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
         }
     }
 
@@ -80,7 +80,7 @@ class PostService {
               Aws.adminUpdatedEvent(updatedPost);*/
 
             // send updated serialised post in response
-            if (updatedPost){
+            if (updatedPost) {
                 return res.send({
                     message: 'Post Updated Successfully',
                     status: PostStatus.updated,
@@ -116,7 +116,7 @@ class PostService {
             /*if (updatedPost)
               Aws.userUpdatedEvent(updatedPost);*/
 
-            if (updatedPost){
+            if (updatedPost) {
                 return res.send({
                     message: 'Post Blocked Successfully',
                     status: PostStatus.blocked,

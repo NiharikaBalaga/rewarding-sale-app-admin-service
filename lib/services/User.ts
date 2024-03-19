@@ -1,20 +1,17 @@
-import UserModel, {IUser} from '../DB/Models/User';
+import UserModel from '../DB/Models/User';
+import { httpCodes } from '../constants/http-status-code';
+import type { Response } from 'express';
+import { UserStatus } from '../DB/Models/user-status.enum';
 import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
-import {httpCodes} from "../constants/http-status-code";
-import type { Response } from "express";
-import {UserStatus} from "../DB/Models/user-status.enum";
-import mongoose from "mongoose";
-import {AdminStatus} from "../DB/Models/admin-status.enum";
 
-
-class UserService{
+class UserService {
 
   static async createUserByPhone(userObject: any, userId: string) {
     try {
       // check if user already exists
       const existingUser = await this.findById(userId);
       if (existingUser) throw new Error('User With Given Id already exists');
-      const user = new UserModel({ ...userObject  });
+      const user = new UserModel({ ...userObject });
       await user.save();
 
       return user;
@@ -42,8 +39,8 @@ class UserService{
 
   private static async _update(id: string, updateUserDto: any) {
     return UserModel
-        .findByIdAndUpdate(id, updateUserDto, { new: true })
-        .exec();
+      .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .exec();
   }
 
   static async updateUser(userId: string, updateDto: any) {
@@ -56,7 +53,7 @@ class UserService{
       const users = await UserModel.find({}).exec();
 
       // send updated serialised user in response
-      if (users){
+      if (users) {
         return res.send({
           message: 'Users Retrieved Successfully',
           status: httpCodes.ok,
@@ -69,9 +66,9 @@ class UserService{
           users: null
         });
       }
-    } catch (error){
+    } catch (error) {
       console.error('getUsers-error', error);
-      return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
+      return res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
     }
   }
 
@@ -85,11 +82,11 @@ class UserService{
 
       // TODO: Check how to implement Aws
       // SNS event
-      /*if (updatedUser)
+      /* if (updatedUser)
         Aws.userUpdatedEvent(updatedUser);*/
 
       // send updated serialised user in response
-      if (updatedUser){
+      if (updatedUser) {
         return res.send({
           message: 'User Blocked Successfully',
           status: UserStatus.blocked,
@@ -108,8 +105,9 @@ class UserService{
       return res.status(httpCodes.serverError).send('Server Error, Please try again later');
     }
   }
-}
 
+  // TODO add unblock user
+}
 
 export {
   UserService

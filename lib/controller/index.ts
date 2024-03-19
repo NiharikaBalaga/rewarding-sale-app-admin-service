@@ -1,88 +1,104 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
-import {UserService} from "../services/User";
-import {AdminService} from "../services/Admin";
-import {AuthService} from "../services/Auth";
-import {IAdmin} from "../DB/Models/Admin";
-import {PostService} from "../services/Post";
+import { UserService } from '../services/User';
+import { AdminService } from '../services/Admin';
+import type { ISuperAdmin } from '../DB/Models/SuperAdmin';
+import { SuperAdminService } from '../services/SuperAdmin';
+import { PostService } from 'lib/services/Post';
 
 interface RequestValidatedByPassport extends Request {
-    admin: {
-        email: string;
-        accessToken: string;
-        iat: number,
-        exp: number,
-        refreshToken: string
-    }
+  user: {
+    userId: string;
+    accessToken: string;
+    phoneNumber: string,
+    iat: number,
+    exp: number,
+    refreshToken: string
+  }
 }
 
-interface RequestInterferedByIsBlocked extends RequestValidatedByPassport {
-    currentAdmin: IAdmin
+interface RequestInterferedByIsSuperAdmin extends RequestValidatedByPassport {
+  superAdmin: ISuperAdmin
 }
 
 class AdminServiceController {
+  public static adminSetup(req: Request, res: Response) {
+    const { matchedData: { email, oneTimePassword, phoneNumber, password } } = req.body;
+    return AdminService.setUp(email, phoneNumber, oneTimePassword, password, res);
+  }
 
-    public static verifyAdmin(req: Request, res: Response) {
-        const { matchedData: { email, password } } = req.body;
-        return AuthService.verifyAdmin(email, password, res);
-    }
+  public static adminLogin(req: Request, res: Response) {
+    const { matchedData: { email, password } } = req.body;
+    return AdminService.login(email, password, res);
+  }  
 
-    public static getUsers(req: RequestInterferedByIsBlocked, res: Response) {
-        return UserService.getUsers(res);
-    }
+  /* public static verifyAdmin(req: Request, res: Response) {
+      const { matchedData: { email, password } } = req.body;
+      return AuthService.verifyAdmin(email, password, res);
+  } */
 
-    public static blockUser(req: RequestInterferedByIsBlocked, res: Response) {
-        const { userId } = req.body.matchedData;
-        return UserService.blockUser(userId, res);
-    }
+  public static getUsers(req: RequestValidatedByPassport, res: Response) {
+    return UserService.getUsers(res);
+  }
 
-    public static getPosts(req: RequestInterferedByIsBlocked, res: Response) {
-        return PostService.getPosts(res);
-    }
+  public static blockUser(req: RequestValidatedByPassport, res: Response) {
+    const { userId } = req.body.matchedData;
+    return UserService.blockUser(userId, res);
+  }
 
-    public static updatePostAdmin(req: RequestInterferedByIsBlocked, res: Response) {
-        const { matchedData  } = req.body;
-        const postId  = matchedData.postId;
-        return PostService.updatePostAdmin(postId, matchedData, res);
-    }
+  public static getPosts(req: RequestValidatedByPassport, res: Response) {
+    return PostService.getPosts(res);
+  }
 
-    public static blockPost(req: RequestInterferedByIsBlocked, res: Response) {
-        const { matchedData  } = req.body;
-        const postId  = matchedData.postId;
-        return PostService.blockPost(postId, res);
-    }
+  public static updatePostAdmin(req: RequestValidatedByPassport, res: Response) {
+    const { matchedData } = req.body;
+    const postId = matchedData.postId;
+    return PostService.updatePostAdmin(postId, matchedData, res);
+  }
 
-    public static getAdmins(req: RequestInterferedByIsBlocked, res: Response) {
-        return AdminService.getAdmins(res);
-    }
+  public static blockPost(req: RequestValidatedByPassport, res: Response) {
+    const { matchedData } = req.body;
+    const postId = matchedData.postId;
+    return PostService.blockPost(postId, res);
+  }
 
-    /*public static createAdmin(req: RequestInterferedByIsBlocked, res: Response) {
-        const { matchedData } = req.body;
-        return AdminService.createAdmin(matchedData, res);
-    }*/
-    public static createAdmin(req: Request, res: Response) {
-        const { matchedData } = req.body;
-        return AdminService.createAdmin(matchedData, res);
-    }
+  public static getAdmins(req: RequestValidatedByPassport, res: Response) {
+    return AdminService.getAdmins(res);
+  }
 
-    public static updateAdmin(req: RequestInterferedByIsBlocked, res: Response) {
-        const { adminId }  = req.body.matchedData;
-        const { matchedData  } = req.body;
-        return AdminService.updateAdmin(adminId, matchedData, res);
-    }
+  // Mine
+  /*public static createAdmin(req: RequestValidatedByPassport, res: Response) {
+      const { matchedData } = req.body;
+      return AdminService.createAdmin(matchedData, res);
+  }*/
+  /* public static createAdmin(req: Request, res: Response) {
+    const { matchedData } = req.body;
+    return AdminService.createAdmin(matchedData, res);
+  } */
+  // Niharika
+  public static createNewAdmin(req: RequestInterferedByIsSuperAdmin, res: Response) {
+    const { matchedData: { email, firstName, lastName, phoneNumber } } = req.body;
+    return SuperAdminService.createNewAdmin(email, firstName, lastName, phoneNumber, res);
+  }
 
-    public static blockAdmin(req: RequestInterferedByIsBlocked, res: Response) {
-        const { adminId }  = req.body.matchedData;
-        return AdminService.blockAdmin(adminId, res);
-    }
+  public static updateAdmin(req: RequestValidatedByPassport, res: Response) {
+    const { adminId } = req.body.matchedData;
+    const { matchedData } = req.body;
+    return AdminService.updateAdmin(adminId, matchedData, res);
+  }
 
-    public static deleteAdmin(req: RequestInterferedByIsBlocked, res: Response) {
-        const { adminId }  = req.body.matchedData;
-        const objectId = new mongoose.Types.ObjectId(adminId);
-        return AdminService.deleteAdmin(objectId, res);
-    }
+  public static blockAdmin(req: RequestValidatedByPassport, res: Response) {
+    const { adminId } = req.body.matchedData;
+    return AdminService.blockAdmin(adminId, res);
+  }
+
+  public static deleteAdmin(req: RequestValidatedByPassport, res: Response) {
+    const { adminId } = req.body.matchedData;
+    const objectId = new mongoose.Types.ObjectId(adminId);
+    return AdminService.deleteAdmin(objectId, res);
+  }  
 }
 
-export  {
-    AdminServiceController
+export {
+  AdminServiceController
 };
