@@ -49,6 +49,12 @@ class AdminService {
         email,
         phoneNumber
       });
+      console.log('setUp');
+      console.log('admin', admin);
+      console.log('email', email);
+      console.log('phoneNumber', phoneNumber);
+      console.log('oneTimePassword', oneTimePassword);
+      console.log('password', password);
 
       if (admin) {
         // Should not be signedUp already to setup account
@@ -66,6 +72,9 @@ class AdminService {
         // password Matches
         // store user entered password as hashed password into DB
         const hashedPassword = await argon2.hash(password);
+        console.log('hashedPassword', hashedPassword);
+        console.log('--------------------------------------------');
+        console.log('');
         await AdminModel.findByIdAndUpdate(admin.id, {
           password: hashedPassword,
           signedUp: true
@@ -91,6 +100,13 @@ class AdminService {
       const admin = await AdminModel.findOne({
         email
       });
+
+      console.log('login');
+      console.log('admin', admin);
+      console.log('email', email);
+      console.log('password', password);
+      console.log('--------------------------------------------');
+      console.log('');
 
       if (admin) {
         if (!admin.signedUp)
@@ -160,7 +176,7 @@ class AdminService {
       console.error('createAdmin-AdminService', logoutError);
       return res.sendStatus(httpCodes.serverError);
     }
-  } */  
+  } */
 }
 
 export {

@@ -12,11 +12,11 @@ function getRouter() {
   });
 
   // Admin Login
-  //Todo jacobo: Check the error of the first commented line
-  //Mine
-  //router.post('/api/admin/auth', [adminLogin(), validateErrors, AdminServiceController.verifyAdmin]);
-  //router.post('/api/admin/auth', [...adminLogin(), validateErrors, AdminServiceController.verifyAdmin]);
-  //router.post('/api/admin/auth', AdminServiceController.verifyAdmin);
+  // Todo jacobo: Check the error of the first commented line
+  // Mine
+  // router.post('/api/admin/auth', [adminLogin(), validateErrors, AdminServiceController.verifyAdmin]);
+  // router.post('/api/admin/auth', [...adminLogin(), validateErrors, AdminServiceController.verifyAdmin]);
+  // router.post('/api/admin/auth', AdminServiceController.verifyAdmin);
   // Niharika
   // First Time Admin Setup = new Password
   // @ts-ignore
@@ -24,7 +24,6 @@ function getRouter() {
 
   // @ts-ignore
   router.post('/api/admin/login', [adminLogin(), validateErrors, AdminServiceController.adminLogin]);
-
 
   // Get Users
   router.get('/api/admin/users', [passport.authenticate('jwt-access', { session: false }), isAdmin, AdminServiceController.getUsers]);
@@ -45,10 +44,10 @@ function getRouter() {
   router.get('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isAdmin, AdminServiceController.getAdmins]);
 
   // Create Admin
-  //Todo jacobo: Check how to handle the admin creation
+  // Todo jacobo: Check how to handle the admin creation
   // Mine
-  //router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isAdmin, newAdmin(), validateErrors, AdminServiceController.createAdmin]);
-  //router.post('/api/admin/', AdminServiceController.createAdmin);
+  // router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isAdmin, newAdmin(), validateErrors, AdminServiceController.createAdmin]);
+  // router.post('/api/admin/', AdminServiceController.createAdmin);
   // Niharika
   // super admin routes
   router.post('/api/admin/sadmin/admin', [passport.authenticate('jwt-access-super-admin', { session: false }),
