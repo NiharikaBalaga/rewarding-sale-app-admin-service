@@ -2,7 +2,17 @@ import express from 'express';
 import { AdminServiceController } from '../controller';
 import passport from '../strategies/passport-strategy';
 import { isAdmin, isSuperAdmin } from '../middlewares';
-import { adminLogin, adminSetup, blockDeleteAdmin, blockUpdatePost, blockUser, newAdmin, updateAdmin, validateErrors } from './RequestValidations';
+import {
+  adminLogin,
+  adminSetup,
+  blockDeleteAdmin,
+  blockPost,
+  blockUser,
+  newAdmin,
+  updateAdmin,
+  updatePost,
+  validateErrors
+} from './RequestValidations';
 const router = express.Router();
 
 
@@ -26,27 +36,27 @@ function getRouter() {
   router.post('/api/admin/login', [adminLogin(), validateErrors, AdminServiceController.adminLogin]);
 
   // Get Users
-  router.get('/api/admin/users', [passport.authenticate('jwt-access', { session: false }), isAdmin, AdminServiceController.getUsers]);
-
+  router.get('/api/admin/users', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, AdminServiceController.getUsers]);
+  
   // Block User
-  router.put('/api/admin/user/block', [passport.authenticate('jwt-access', { session: false }), isAdmin, blockUser(), validateErrors, AdminServiceController.blockUser]);
+  router.put('/api/admin/user/block', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, blockUser(), validateErrors, AdminServiceController.blockUser]);
 
   // Get Posts
-  router.get('/api/admin/post', [passport.authenticate('jwt-access', { session: false }), isAdmin, AdminServiceController.getPosts]);
+  router.get('/api/admin/post', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, AdminServiceController.getPosts]);
 
   // Update Post
-  router.put('/api/admin/post/', [passport.authenticate('jwt-access', { session: false }), isAdmin, blockUpdatePost(), validateErrors, AdminServiceController.updatePostAdmin]);
+  router.put('/api/admin/post/', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, updatePost(), validateErrors, AdminServiceController.updatePostAdmin]);
 
   // Block Post
-  router.put('/api/admin/post/block', [passport.authenticate('jwt-access', { session: false }), isAdmin, blockUpdatePost(), validateErrors, AdminServiceController.blockPost]);
+  router.put('/api/admin/post/block', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, blockPost(), validateErrors, AdminServiceController.blockPost]);
 
   // Get Admins
-  router.get('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isAdmin, AdminServiceController.getAdmins]);
+  router.get('/api/admin/', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, AdminServiceController.getAdmins]);
 
   // Create Admin
   // Todo jacobo: Check how to handle the admin creation
   // Mine
-  // router.post('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isAdmin, newAdmin(), validateErrors, AdminServiceController.createAdmin]);
+  // router.post('/api/admin/', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, newAdmin(), validateErrors, AdminServiceController.createAdmin]);
   // router.post('/api/admin/', AdminServiceController.createAdmin);
   // Niharika
   // super admin routes
@@ -54,13 +64,13 @@ function getRouter() {
     isSuperAdmin, newAdmin(), validateErrors, AdminServiceController.createNewAdmin]);
 
   // Update Admin
-  router.put('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isAdmin, updateAdmin(), validateErrors, AdminServiceController.updateAdmin]);
+  router.put('/api/admin/', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, updateAdmin(), validateErrors, AdminServiceController.updateAdmin]);
 
   // Block Admin
-  router.put('/api/admin/block', [passport.authenticate('jwt-access', { session: false }), isAdmin, blockDeleteAdmin(), validateErrors, AdminServiceController.blockAdmin]);
+  router.put('/api/admin/block', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, blockDeleteAdmin(), validateErrors, AdminServiceController.blockAdmin]);
 
   // Delete Admin
-  router.delete('/api/admin/', [passport.authenticate('jwt-access', { session: false }), isAdmin, blockDeleteAdmin(), validateErrors, AdminServiceController.deleteAdmin]);
+  router.delete('/api/admin/', [passport.authenticate('jwt-access-admin', { session: false }), isAdmin, blockDeleteAdmin(), validateErrors, AdminServiceController.deleteAdmin]);
 
   // TODO Unblock User
   return router;

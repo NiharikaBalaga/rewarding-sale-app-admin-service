@@ -133,7 +133,7 @@ const blockUser = () => {
       .withMessage('User ID is required')];
 };
 
-const blockUpdatePost = () => {
+const blockPost = () => {
   return [
     body('postId')
       .trim()
@@ -141,6 +141,59 @@ const blockUpdatePost = () => {
       .escape()
       .isString()
       .withMessage('Post ID is required')];
+};
+
+const updatePost = () => {
+  return [
+    body('postId')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isString()
+      .withMessage('Post ID is required'),
+    body('productName')
+      .trim()
+      .optional()
+      .escape()
+      .isString()
+      .withMessage('Product Name is required'),
+    body('oldPrice')
+      .trim()
+      .escape()
+      .optional()
+      .isNumeric()
+      .withMessage('Old price is required'),
+    body('newPrice')
+      .trim()
+      .escape()
+      .optional()
+      .isNumeric()
+      .withMessage('New price is required'),
+    body('oldQuantity')
+      .trim()
+      .escape()
+      .isNumeric()
+      .optional()
+      .withMessage('Old quantity is required'),
+    body('newQuantity')
+      .trim()
+      .escape()
+      .isNumeric()
+      .optional()
+      .withMessage('New quantity is required'),
+    body('productDescription')
+      .trim()
+      .optional()
+      .escape()
+      .isString()
+      .withMessage('Description must be valid'),
+    body('storePlaceId')
+      .trim()
+      .optional()
+      .escape()
+      .isString()
+      .notEmpty()
+      .withMessage('Store PlaceId(Google maps Place Id) must be valid')];
 };
 
 const validateErrors = (req: Request, res: Response, next: NextFunction) => {
@@ -158,4 +211,4 @@ const validateErrors = (req: Request, res: Response, next: NextFunction) => {
 };
 
 
-export { validateErrors, newAdmin, adminSetup, adminLogin, updateAdmin, blockDeleteAdmin, blockUser, blockUpdatePost };
+export { validateErrors, newAdmin, adminSetup, adminLogin, updateAdmin, blockDeleteAdmin, blockUser, blockPost, updatePost };

@@ -94,7 +94,8 @@ class SuperAdminService {
 
       // Updates isBlocked field to true
       const updatedAdmin = await this._update(adminId, {
-        isBlocked: true
+        isBlocked: true,
+        signedUp: false
       });
 
       // TODO: Check how to implement Aws

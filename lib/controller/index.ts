@@ -53,6 +53,8 @@ class AdminServiceController {
 
   public static updatePostAdmin(req: Request, res: Response) {
     const { matchedData } = req.body;
+    console.log('updatePostAdmin');
+    console.log('matchedData: ', matchedData);
     const postId = matchedData.postId;
     return PostService.updatePostAdmin(postId, matchedData, res);
   }
