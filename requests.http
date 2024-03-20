@@ -1,6 +1,6 @@
 ### Create Admin User
 POST http://localhost:3002/api/admin/sadmin/admin
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY0OWNjNmUxNTk0ZDI4MTc2ZDVhZTIiLCJwaG9uZU51bWJlciI6IjQzNy01NTYtMjk0OCIsImlhdCI6MTcxMDUyOTczNCwiZXhwIjoxNzEwNTMzMzM0fQ.UETZoJ0hcGSfjakZ-bt-WBVf1ZbvEi69yGC8hh326aI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWZhNTYwM2UzMTZjZWI3NjdiOWJmMzIiLCJwaG9uZU51bWJlciI6IjQzNy01NTYtMjk0OCIsImlhdCI6MTcxMDkwNDgzNSwiZXhwIjoxNzEwOTA4NDM1fQ.mrmF7kLCgtnolLbqT1w54lA7LkZdU6EPYMwEAYrH5BI
 content-type: application/json
 
 {
@@ -17,7 +17,7 @@ content-type: application/json
 {
   "phoneNumber": "437-556-4035",
   "email": "svijayr007@gmail.com",
-  "oneTimePassword": "vxmvq",
+  "oneTimePassword": "nxtj1",
   "password": "Vijay@001"
 }
 
@@ -33,5 +33,5 @@ content-type: application/json
 
 ### Admin Get All Users
 GET http://localhost:3002/api/admin/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY0OWNmODIyZjFhOGY5M2RlYmZlNzgiLCJwaG9uZU51bWJlciI6IjQzNy01NTYtNDAzNSIsImlhdCI6MTcxMDUyOTg1MSwiZXhwIjoxNzEwNjE2MjUxfQ.n5sc-ICMOjpyHadf5HSHRsVi7QvvSC_4j9hnu5oB07M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWZhNTYyOGZjZDgxMGU4Mzk2ODQ0YjAiLCJwaG9uZU51bWJlciI6IjQzNy01NTYtNDAzNSIsImlhdCI6MTcxMDkwNDk4MSwiZXhwIjoxNzEwOTkxMzgxfQ.9HB-vpU3SpDfApwiZnRJEoBLuFeOMVf1NSoMM18JN5o
 content-type: application/json
