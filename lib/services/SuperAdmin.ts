@@ -2,9 +2,9 @@ import SuperAdminModel from '../DB/Models/SuperAdmin';
 import type { Response } from 'express';
 import { httpCodes } from '../constants/http-status-code';
 import { AdminService } from './Admin';
-import { AdminStatus } from 'lib/DB/Models/admin-status.enum';
-import AdminModel, { IAdmin } from 'lib/DB/Models/Admin';
 import mongoose from 'mongoose';
+import { AdminStatus } from '../DB/Models/admin-status.enum';
+import AdminModel, { IAdmin } from '../DB/Models/Admin';
 
 class SuperAdminService {
   static async findById(id: string) {

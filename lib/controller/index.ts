@@ -4,7 +4,8 @@ import { UserService } from '../services/User';
 import { AdminService } from '../services/Admin';
 import type { ISuperAdmin } from '../DB/Models/SuperAdmin';
 import { SuperAdminService } from '../services/SuperAdmin';
-import { PostService } from 'lib/services/Post';
+import { PostService } from '../services/Post';
+
 
 interface RequestValidatedByPassport extends Request {
   user: {
