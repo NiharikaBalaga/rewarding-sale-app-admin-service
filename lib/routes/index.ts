@@ -78,6 +78,8 @@ function getRouter() {
   // Delete Admin
   router.delete('/api/admin/', [passport.authenticate('jwt-access-super-admin', { session: false }), isAdminOrSuperAdmin, blockDeleteAdmin(), validateErrors, AdminServiceController.deleteAdmin]);
 
+  //
+
   // TODO Unblock User
   return router;
 }
