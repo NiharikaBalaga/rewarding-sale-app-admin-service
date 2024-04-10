@@ -7,6 +7,7 @@ import { SuperAdminService } from '../services/SuperAdmin';
 import { PostService } from '../services/Post';
 import { VoteService } from '../services/Vote';
 import { ReportService } from '../services/Report';
+import { RewardService } from '../services/Reward';
 
 
 interface RequestValidatedByPassport extends Request {
@@ -45,13 +46,19 @@ class AdminServiceController {
       return AuthService.verifyAdmin(email, password, res);
   } */
 
-  public static getUsers(req: Request, res: Response) {
+  public static getUsers(req: RequestInterferedByIsSuperAdmin, res: Response) {
     return UserService.getUsers(res);
   }
 
-  public static blockUser(req: Request, res: Response) {
+  public static blockUser(req: RequestInterferedByIsSuperAdmin, res: Response) {
     const { userId } = req.body.matchedData;
     return UserService.blockUser(userId, res);
+  }
+
+  public static updateUserPoints(req: RequestInterferedByIsSuperAdmin, res: Response) {
+    const { points } = req.body.matchedData;
+    const { userId } = req.user;
+    return RewardService.updatePoints(userId, points, res);
   }
 
   public static getPosts(req: Request, res: Response) {

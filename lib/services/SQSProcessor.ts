@@ -70,6 +70,8 @@ class SQSProcessorService {
         return this._handleVoteCreation(postId, vote);
       case Events.newReport:
         return this._handleReportCreation(postId, report);
+      case Events.rewardUserUpdatePoints:
+        return this._handleRewardUserUpdatePoints(user, userId);
       default:
         console.warn(`Unhandled event type: ${EVENT_TYPE}`);
         break;
@@ -99,6 +101,16 @@ class SQSProcessorService {
       await ReportService.reportPost(postId, report);
     } catch (error) {
       console.error('_handleVoteCreation-error', error);
+      throw error;
+    }
+  }
+
+  private static async _handleRewardUserUpdatePoints(user: any, userId: string) {
+    try {
+      console.log('Admin service SQS _handleRewardUserUpdatePoints user:', user);
+      await UserService.updatePointsSNS(user, userId);
+    } catch (error) {
+      console.error('_handleRewardUserUpdatePoints-error', error);
       throw error;
     }
   }

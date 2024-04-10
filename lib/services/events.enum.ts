@@ -10,4 +10,5 @@ export enum Events {
   postDLLDelete = 'POST_DLL_DELETE',
   newVote = 'VOTE_NEW_VOTE',
   newReport = 'REPORT_NEW_REPORT',
+  rewardUserUpdatePoints = 'REWARD_USER_UPDATE_POINTS',
 }
