@@ -4,15 +4,14 @@ import type { Response } from 'express';
 import { UserStatus } from '../DB/Models/user-status.enum';
 import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
 
-
-class UserService{
+class UserService {
 
   static async createUserByPhone(userObject: any, userId: string) {
     try {
       // check if user already exists
       const existingUser = await this.findById(userId);
       if (existingUser) throw new Error('User With Given Id already exists');
-      const user = new UserModel({ ...userObject  });
+      const user = new UserModel({ ...userObject });
       await user.save();
 
       return user;
@@ -54,14 +53,22 @@ class UserService{
       const users = await UserModel.find({}).exec();
 
       // send updated serialised user in response
-      return res.send({
-        message: 'Users Retrieved Successfully',
-        status: httpCodes.ok,
-        users: users
-      });
-    } catch (error){
+      if (users) {
+        return res.send({
+          message: 'Users Retrieved Successfully',
+          status: httpCodes.ok,
+          users: users
+        });
+      } else {
+        return res.send({
+          message: 'Users Retrieved without success, please check',
+          status: httpCodes.notFound,
+          users: null
+        });
+      }
+    } catch (error) {
       console.error('getUsers-error', error);
-      return  res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
+      return res.sendStatus(httpCodes.serverError).send('Server Error, Please try again later');
     }
   }
 
@@ -79,11 +86,19 @@ class UserService{
         Aws.userUpdatedEvent(updatedUser);*/
 
       // send updated serialised user in response
-      return res.send({
-        message: 'User Blocked Successfully',
-        status: UserStatus.blocked,
-        updatedUser: updatedUser
-      });
+      if (updatedUser) {
+        return res.send({
+          message: 'User Blocked Successfully',
+          status: UserStatus.blocked,
+          updatedUser: updatedUser
+        });
+      } else {
+        return res.send({
+          message: 'User Blocked without success, please check',
+          status: UserStatus.notUpdated,
+          updatedUser: null
+        });
+      }
     } catch (error) {
       // TODO handle any failure
       console.error('blockUser-error', error);
@@ -93,7 +108,6 @@ class UserService{
 
   // TODO add unblock user
 }
-
 
 export {
   UserService

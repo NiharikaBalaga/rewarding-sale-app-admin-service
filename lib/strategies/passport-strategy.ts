@@ -4,8 +4,7 @@ import  type{ Request } from 'express';
 
 
 type JwtPayload = {
-  userId: string;
-  phoneNumber: string;
+  email: string;
 };
 const JwtAccessStrategy  = passportJWT.Strategy;
 const ExtractJwt = passportJWT.ExtractJwt;

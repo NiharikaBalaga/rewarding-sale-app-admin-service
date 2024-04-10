@@ -5,6 +5,11 @@ import { PostDLLService } from './PostDLL';
 import type { IPostDLL } from '../DB/Models/Post-DLL';
 import { PostService } from './Post';
 import type { IPost } from '../DB/Models/Post';
+import { VoteService } from './Vote';
+import { ReportService } from './Report';
+import type { IUser } from '../DB/Models/User';
+import type { IVote } from '../DB/Models/Vote';
+import { IReport } from '../DB/Models/Report';
 
 class SQSProcessorService {
   static async ProcessSqsMessage(messages: any[]) {
@@ -38,10 +43,10 @@ class SQSProcessorService {
   private static async _handleMessageEventsSentBySNS(parsedMessage: any) {
     const {
       EVENT_TYPE, user, userId, token, updatedUser, post, postId,
-      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL
+      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL, reportType, vote, report
     } = parsedMessage;
     console.log(EVENT_TYPE, user, userId, token, updatedUser, post, postId,
-      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL);
+      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL, reportType, vote, report);
     switch (EVENT_TYPE) {
       case Events.userCreatedByPhone:
         return this._handleUserCreationByPhone(user, userId);
@@ -61,6 +66,10 @@ class SQSProcessorService {
         return this._handlePostDLLUpdate(updatedPostDLL, postDLLId);
       case Events.postDLLDelete:
         return this._handlePostDLLDelete(postDLLId);
+      case Events.newVote:
+        return this._handleVoteCreation(postId, vote);
+      case Events.newReport:
+        return this._handleReportCreation(postId, report);
       default:
         console.warn(`Unhandled event type: ${EVENT_TYPE}`);
         break;
@@ -71,6 +80,25 @@ class SQSProcessorService {
       await UserService.createUserByPhone(user, userId);
     } catch (error) {
       console.error('_handleUserCreationByPhone-error', error);
+      throw error;
+    }
+  }
+
+  private static async _handleVoteCreation(postId: mongoose.Types.ObjectId, vote: IVote) {
+    try {
+      console.log('postId: ', postId);
+      await VoteService.vote(postId, vote);
+    } catch (error) {
+      console.error('_handleVoteCreation-error', error);
+      throw error;
+    }
+  }
+
+  private static async _handleReportCreation(postId: mongoose.Types.ObjectId, report: IReport) {
+    try {
+      await ReportService.reportPost(postId, report);
+    } catch (error) {
+      console.error('_handleVoteCreation-error', error);
       throw error;
     }
   }

@@ -1,7 +1,6 @@
 import type { Secret } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 
-
 class TokenService {
   public static async getAdminToken(userId: string, phoneNumber: string) {
     const jwtAccessSecretKey: Secret = process.env.JWT_ADMIN_SECRET || 'jlndoqwjwp9qjdlasjdnaajadgjasdgdsgdsh';
@@ -28,7 +27,6 @@ class TokenService {
   }
 
 }
-
 
 export {
   TokenService
