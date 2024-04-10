@@ -4,6 +4,9 @@ import { httpCodes } from '../constants/http-status-code';
 import * as argon2 from 'argon2';
 import { TokenService } from './Token';
 import { SNSService } from './SNS';
+import PostModel from '../DB/Models/Post';
+import VoteModel from '../DB/Models/Vote';
+import ReportModel from '../DB/Models/Report';
 
 class AdminService {
 
@@ -133,50 +136,37 @@ class AdminService {
     }
   }
 
-  /* static async findAdminByEmail(email: string) {
-    return AdminModel.findOne({
-      email
-    });
-  }   */
-
-  /* public static async createAdmin(adminObject: Partial<IAdmin>, res: Response) {
+  public static async postsVotesReportsCount(res: Response) {
     try {
-      // Check that the email doesn't exist in db
-      const existingAdmin = await AdminModel.findOne({ email: adminObject.email });
-      if (existingAdmin) {
-        return res.status(httpCodes.conflict).send({
-          message: 'Email already exists',
-          status: httpCodes.conflict
-        });
-      }
+      // Only Published Posts
+      const posts = await PostModel.find({ status: 'POST_PUBLISHED' }).lean(); // lean() returns plain JavaScript objects
 
-      // Add a password and hash it
-      if (!adminObject.password) {
+      if (!posts.length) {
         return res.status(httpCodes.badRequest).send({
-          message: 'Password is required',
-          status: httpCodes.badRequest
+          message: 'There are no posts in the database'
         });
       }
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(adminObject.password, 10); // 10 is the salt rounds
-      const newAdminData = { ...adminObject, password: hashedPassword };
+      // Iterate through each post to get the vote count
+      for (const post of posts) {
+        const postVoteCount = await VoteModel.countDocuments({ postId: post._id });
+        // @ts-ignore
+        post.votesCount = postVoteCount; // Add the vote count to the post object
+      }
 
-      // Create new Admin
-      const newAdmin = new AdminModel(newAdminData);
-      await newAdmin.save();
+      // Iterate through each post to get the report count
+      for (const post of posts) {
+        const postReportCount = await ReportModel.countDocuments({ postId: post._id });
+        // @ts-ignore
+        post.reportsCount = postReportCount; // Add the report count to the post object
+      }
 
-      // send updated serialised admin in response
-      return res.send({
-        message: 'Admin created Successfully',
-        status: AdminStatus.created,
-        newAdmin: newAdmin
-      });
-    } catch (logoutError) {
-      console.error('createAdmin-AdminService', logoutError);
+      return res.status(httpCodes.ok).send({ posts }); // Send the modified posts array
+    } catch (error) {
+      console.error('postsVoteCount-voteService', error);
       return res.sendStatus(httpCodes.serverError);
     }
-  } */
+  }
 }
 
 export {

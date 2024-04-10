@@ -1,4 +1,4 @@
-import { body, matchedData, validationResult } from 'express-validator';
+import { body, matchedData, param, validationResult } from 'express-validator';
 import type { NextFunction, Request, Response } from 'express';
 import { httpCodes } from '../constants/http-status-code';
 
@@ -196,6 +196,17 @@ const updatePost = () => {
       .withMessage('Store PlaceId(Google maps Place Id) must be valid')];
 };
 
+const postId = () => {
+  return [
+    param('postId')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isMongoId()
+      .withMessage('Post Id is required'),
+  ];
+};
+
 const validateErrors = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -211,4 +222,4 @@ const validateErrors = (req: Request, res: Response, next: NextFunction) => {
 };
 
 
-export { validateErrors, newAdmin, adminSetup, adminLogin, updateAdmin, blockDeleteAdmin, blockUser, blockPost, updatePost };
+export { validateErrors, newAdmin, adminSetup, adminLogin, updateAdmin, blockDeleteAdmin, blockUser, blockPost, updatePost, postId };

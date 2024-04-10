@@ -64,6 +64,31 @@ class ReportService {
     }
   }
 
+  public static async getPostsReportCounts(res: Response) {
+    try {
+      // Only Published Posts
+      const posts = await PostModel.find({ status: 'POST_PUBLISHED' }).lean(); // lean() returns plain JavaScript objects
+
+      if (!posts.length) {
+        return res.status(httpCodes.badRequest).send({
+          message: 'There are no posts in the database'
+        });
+      }
+
+      // Iterate through each post to get the post count
+      for (const post of posts) {
+        const postReportCount = await ReportModel.countDocuments({ postId: post._id });
+        // @ts-ignore
+        post.reportsCount = postReportCount; // Add the post count to the post object
+      }
+
+      return res.status(httpCodes.ok).send({ posts }); // Send the modified posts array
+    } catch (error) {
+      console.error('getPostsReportCounts-ReportService', error);
+      return res.sendStatus(httpCodes.serverError);
+    }
+  }
+
   public static async getUserPostReport(postId: mongoose.Types.ObjectId, currentUser: IUser, res: Response) {
     try {
       // Only Published Post
