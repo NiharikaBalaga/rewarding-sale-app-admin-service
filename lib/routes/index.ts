@@ -8,10 +8,10 @@ import {
   blockDeleteAdmin,
   blockPost,
   blockUser,
-  newAdmin,
+  newAdmin, postId,
   updateAdmin,
   updatePost,
-  validateErrors
+  validateErrors,
 } from './RequestValidations';
 import { authenticateAdminOrSuperAdmin } from '../middlewares/authMiddleware';
 const router = express.Router();
@@ -78,7 +78,25 @@ function getRouter() {
   // Delete Admin
   router.delete('/api/admin/', [passport.authenticate('jwt-access-super-admin', { session: false }), isAdminOrSuperAdmin, blockDeleteAdmin(), validateErrors, AdminServiceController.deleteAdmin]);
 
-  //
+  // Posts Votes Reports Count
+  // @ts-ignore
+  router.get('/api/admin/post/votes/reports/count', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, AdminServiceController.postsVotesReportsCount]);
+
+  // Post Votes Count
+  // @ts-ignore
+  router.get('/api/admin/post/:postId/votes/count', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, postId(), validateErrors, AdminServiceController.postVoteCount]);
+
+  // Posts Votes Count
+  // @ts-ignore
+  router.get('/api/admin/post/votes/count', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, AdminServiceController.postsVoteCount]);
+
+  // Post report Count
+  // @ts-ignore
+  router.get('/api/admin/post/:postId/reports/count', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, postId(), validateErrors, AdminServiceController.postReportCount]);
+
+  // Posts report Count
+  // @ts-ignore
+  router.get('/api/admin/post/reports/count', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, AdminServiceController.postsReportCount]);
 
   // TODO Unblock User
   return router;

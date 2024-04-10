@@ -5,6 +5,8 @@ import { AdminService } from '../services/Admin';
 import type { ISuperAdmin } from '../DB/Models/SuperAdmin';
 import { SuperAdminService } from '../services/SuperAdmin';
 import { PostService } from '../services/Post';
+import { VoteService } from '../services/Vote';
+import { ReportService } from '../services/Report';
 
 
 interface RequestValidatedByPassport extends Request {
@@ -100,6 +102,30 @@ class AdminServiceController {
     const objectId = new mongoose.Types.ObjectId(adminId);
     return SuperAdminService.deleteAdmin(objectId, res);
   }
+
+  public static postsVotesReportsCount(req: RequestInterferedByIsSuperAdmin, res: Response) {
+    return AdminService.postsVotesReportsCount(res);
+  }
+
+  public static postVoteCount(req: RequestInterferedByIsSuperAdmin, res: Response) {
+    const { matchedData: { postId } } = req.body;
+    return VoteService.postVoteCount(postId, res);
+  }
+
+  public static postsVoteCount(req: RequestInterferedByIsSuperAdmin, res: Response) {
+    return VoteService.postsVoteCount(res);
+  }
+
+  public static postReportCount(req: RequestInterferedByIsSuperAdmin, res: Response) {
+    const { matchedData: { postId } } = req.body;
+
+    return ReportService.getPostReportCounts(postId, res);
+  }
+
+  public static postsReportCount(req: RequestInterferedByIsSuperAdmin, res: Response) {
+    return ReportService.getPostsReportCounts(res);
+  }
+
 }
 
 export {

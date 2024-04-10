@@ -53,6 +53,32 @@ class VoteService {
     }
   }
 
+  public static async postsVoteCount(res: Response) {
+    try {
+      // Only Published Posts
+      const posts = await PostModel.find({ status: 'POST_PUBLISHED' }).lean(); // lean() returns plain JavaScript objects
+
+      if (!posts.length) {
+        return res.status(httpCodes.badRequest).send({
+          message: 'There are no posts in the database'
+        });
+      }
+
+      // Iterate through each post to get the vote count
+      for (const post of posts) {
+        const postVoteCount = await VoteModel.countDocuments({ postId: post._id });
+        // @ts-ignore
+        post.votesCount = postVoteCount; // Add the vote count to the post object
+      }
+
+      return res.status(httpCodes.ok).send({ posts }); // Send the modified posts array
+    } catch (error) {
+      console.error('postsVoteCount-voteService', error);
+      return res.sendStatus(httpCodes.serverError);
+    }
+  }
+
+
   public static async userPostVote(postId: mongoose.Types.ObjectId, user: IUser, res: Response) {
     try {
       // Only Published Post
