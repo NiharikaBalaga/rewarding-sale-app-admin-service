@@ -45,7 +45,7 @@ class SNSService {
     try {
       const messageParams: PublishCommandInput = {
         Message,
-        TopicArn: process.env.REWARD_TOPIC_SNS_ARN,
+        TopicArn: process.env.ADMIN_TOPIC_SNS_ARN,
       };
       console.log('SNSService messageParams: ', messageParams);
       const { MessageId } = await this.SNS.send(

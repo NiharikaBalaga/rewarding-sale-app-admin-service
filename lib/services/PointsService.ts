@@ -102,7 +102,6 @@ export class PointsService {
       if (userUpdated)
         SNSService.updateUserRewards(userUpdated);
 
-
       // Update Post Points
       const postPointUpdated = await PostPointsModel.findOneAndUpdate({
         postId,
