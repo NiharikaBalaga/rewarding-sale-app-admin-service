@@ -28,6 +28,7 @@ async function bootstrap() {
     'JWT_SUPER_ADMIN_SECRET',
     'aws_sns_access_key_id',
     'aws_sns_secret_access_key',
+    'ADMIN_TOPIC_SNS_ARN',
     'JWT_ADMIN_SECRET'
   ];
 

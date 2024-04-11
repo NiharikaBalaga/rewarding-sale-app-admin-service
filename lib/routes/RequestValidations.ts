@@ -135,12 +135,36 @@ const blockUser = () => {
 
 const updateUserPoints = () => {
   return [
-    body('points')
+    body('userId')
       .trim()
       .notEmpty()
       .escape()
       .isString()
-      .withMessage('Points is required')];
+      .withMessage('User ID is required'),
+    body('postId')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isString()
+      .withMessage('Post ID is required'),
+    body('userPoints')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isNumeric()
+      .withMessage('User Points is required'),
+    body('oldPostPoints')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isNumeric()
+      .withMessage('Old Post Points is required'),
+    body('newPostPoints')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isNumeric()
+      .withMessage('New Post Points is required')];
 };
 
 const blockPost = () => {

@@ -42,9 +42,13 @@ function getRouter() {
   // @ts-ignore
   router.put('/api/admin/user/block', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, blockUser(), validateErrors, AdminServiceController.blockUser]);
 
-  // Update User points
+  // Update User Post points
   // @ts-ignore
-  router.put('/api/admin/user/points', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, updateUserPoints(), validateErrors, AdminServiceController.updateUserPoints]);
+  router.put('/api/admin/user/post/points', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, updateUserPoints(), validateErrors, AdminServiceController.updateUserPostPoints]);
+
+  // Get User Posts Points
+  // @ts-ignore
+  router.get('/api/admin/user/:userId/posts/points', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, AdminServiceController.getUserPostsPoints]);
 
   // Get Posts
   // @ts-ignore

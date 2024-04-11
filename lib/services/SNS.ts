@@ -1,4 +1,8 @@
 import { PublishCommand, SNSClient } from '@aws-sdk/client-sns';
+import type { PublishCommandInput } from '@aws-sdk/client-sns';
+import type { IUser } from '../DB/Models/User';
+import type { IPostPointsSchema } from '../DB/Models/Post-points.schema';
+import { Events } from './events.enum';
 
 
 class SNSService {
@@ -35,6 +39,45 @@ class SNSService {
       console.error('sendAdminLoginDetailsToPhoneError', sendAdminLoginDetailsToPhoneError);
       throw new Error('sendAdminLoginDetailsToPhoneError');
     }
+  }
+
+  private static async _publishToRewardTopicARN(Message: string) { // groupId should be POST ID of reward
+    try {
+      const messageParams: PublishCommandInput = {
+        Message,
+        TopicArn: process.env.REWARD_TOPIC_SNS_ARN,
+      };
+      console.log('SNSService messageParams: ', messageParams);
+      const { MessageId } = await this.SNS.send(
+        new PublishCommand(messageParams),
+      );
+      console.log('SNSService MessageId: ', MessageId);
+      console.log('_publishToRewardTopicARN-success', MessageId);
+    } catch (_publishToRewardTopicARNError) {
+      console.error(
+        '_publishToRewardTopicARNError',
+        _publishToRewardTopicARNError,
+      );
+    }
+  }
+
+  static async updateUserRewards(user: IUser) {
+    console.log('SNSService user: ', user);
+    console.log('SNSService user.id: ', user.id);
+    // console.log('SNSService reward.id: ', postPoints.postId);
+    const EVENT_TYPE = Events.rewardUserUpdatePoints;
+    const snsMessage = Object.assign({ user }, { EVENT_TYPE, userId: user.id });
+    console.log(`Publishing ${EVENT_TYPE} to Reward Topic`);
+    return this._publishToRewardTopicARN(JSON.stringify(snsMessage));
+  }
+
+  static async updatePostPointsRewards(postPoints: IPostPointsSchema) {
+    console.log('SNSService postPoints: ', postPoints);
+    // console.log('SNSService reward.id: ', postPoints.postId);
+    const EVENT_TYPE = Events.rewardPostPointsUpdatePoints;
+    const snsMessage = Object.assign({ postPoints }, { EVENT_TYPE });
+    console.log(`Publishing ${EVENT_TYPE} to Reward Topic`);
+    return this._publishToRewardTopicARN(JSON.stringify(snsMessage));
   }
 }
 

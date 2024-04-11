@@ -11,4 +11,5 @@ export enum Events {
   newVote = 'VOTE_NEW_VOTE',
   newReport = 'REPORT_NEW_REPORT',
   rewardUserUpdatePoints = 'REWARD_USER_UPDATE_POINTS',
+  rewardPostPointsUpdatePoints = 'REWARD_POST_POINTS_UPDATE',
 }
