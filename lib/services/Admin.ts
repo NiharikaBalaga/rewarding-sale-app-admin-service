@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import AdminModel from '../DB/Models/Admin';
+import AdminModel, { IAdmin } from '../DB/Models/Admin';
 import { httpCodes } from '../constants/http-status-code';
 import * as argon2 from 'argon2';
 import { TokenService } from './Token';
@@ -7,6 +7,7 @@ import { SNSService } from './SNS';
 import PostModel from '../DB/Models/Post';
 import VoteModel from '../DB/Models/Vote';
 import ReportModel from '../DB/Models/Report';
+import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
 
 class AdminService {
 
@@ -18,6 +19,35 @@ class AdminService {
     return AdminModel.findOne({
       email
     });
+  }
+
+  static async addTokenInBlackList(accessToken: string) {
+    const blackListToken = new UserTokenBlacklistModel({
+      token: accessToken,
+    });
+    return blackListToken.save();
+  }
+
+  public static async tokenInBlackList(accessToken: string) {
+    return UserTokenBlacklistModel.findOne({
+      token: accessToken
+    });
+  }
+
+  public static async logout(userId: string, accessToken: string, res: Response) {
+    try {
+      // add current access token into blacklist collection, so we won't allow this token anymore - check tokenBlacklist middleware
+      const blackListToken = new UserTokenBlacklistModel({
+        token: accessToken
+      });
+
+      await blackListToken.save();
+
+      return res.send('Logout Success');
+    } catch (logoutError){
+      console.error('logout-AdminService', logoutError);
+      return  res.sendStatus(httpCodes.serverError);
+    }
   }
 
   static async create(email: string, firstName: string, lastName: string, phoneNumber: string) {

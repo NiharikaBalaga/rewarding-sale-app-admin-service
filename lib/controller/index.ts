@@ -35,6 +35,11 @@ class AdminServiceController {
     return AdminService.login(email, password, res);
   }
 
+  public static adminLogut(req: RequestInterferedByIsSuperAdmin, res: Response) {
+    const { userId, accessToken } = req.user;
+    return AdminService.logout(userId, accessToken, res);
+  }
+
   /* public static verifyAdmin(req: Request, res: Response) {
       const { matchedData: { email, password } } = req.body;
       return AuthService.verifyAdmin(email, password, res);
