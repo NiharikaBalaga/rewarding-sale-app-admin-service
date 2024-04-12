@@ -133,6 +133,40 @@ const blockUser = () => {
       .withMessage('User ID is required')];
 };
 
+const updateUserPoints = () => {
+  return [
+    body('userId')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isString()
+      .withMessage('User ID is required'),
+    body('postId')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isString()
+      .withMessage('Post ID is required'),
+    body('userPoints')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isNumeric()
+      .withMessage('User Points is required'),
+    body('oldPostPoints')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isNumeric()
+      .withMessage('Old Post Points is required'),
+    body('newPostPoints')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isNumeric()
+      .withMessage('New Post Points is required')];
+};
+
 const blockPost = () => {
   return [
     body('postId')
@@ -222,4 +256,4 @@ const validateErrors = (req: Request, res: Response, next: NextFunction) => {
 };
 
 
-export { validateErrors, newAdmin, adminSetup, adminLogin, updateAdmin, blockDeleteAdmin, blockUser, blockPost, updatePost, postId };
+export { validateErrors, newAdmin, adminSetup, adminLogin, updateAdmin, blockDeleteAdmin, blockUser, blockPost, updatePost, postId, updateUserPoints };

@@ -3,6 +3,7 @@ import { httpCodes } from '../constants/http-status-code';
 import type { Response } from 'express';
 import { UserStatus } from '../DB/Models/user-status.enum';
 import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
+import type mongoose from 'mongoose';
 
 class UserService {
 
@@ -35,6 +36,16 @@ class UserService {
     return UserTokenBlacklistModel.findOne({
       token: accessToken
     });
+  }
+
+  public static async updatePointsSNS(userObject: any, userId: string) {
+    const user = await UserModel.findById(userId);
+    if (user) {
+      await UserModel.findByIdAndUpdate(userId, {
+        points: userObject.points
+      });
+    }
+    return true;
   }
 
   private static async _update(id: string, updateUserDto: any) {

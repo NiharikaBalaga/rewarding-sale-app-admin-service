@@ -10,6 +10,8 @@ import { ReportService } from './Report';
 import type { IUser } from '../DB/Models/User';
 import type { IVote } from '../DB/Models/Vote';
 import { IReport } from '../DB/Models/Report';
+import { IPostPointsSchema } from '../DB/Models/Post-points.schema';
+import { PointsService } from './PointsService';
 
 class SQSProcessorService {
   static async ProcessSqsMessage(messages: any[]) {
@@ -43,10 +45,10 @@ class SQSProcessorService {
   private static async _handleMessageEventsSentBySNS(parsedMessage: any) {
     const {
       EVENT_TYPE, user, userId, token, updatedUser, post, postId,
-      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL, reportType, vote, report
+      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL, reportType, vote, report, postPoints
     } = parsedMessage;
     console.log(EVENT_TYPE, user, userId, token, updatedUser, post, postId,
-      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL, reportType, vote, report);
+      updatedPost, deletedPost, postDLL, postDLLId, updatedPostDLL, deletedPostDLL, reportType, vote, report, postPoints);
     switch (EVENT_TYPE) {
       case Events.userCreatedByPhone:
         return this._handleUserCreationByPhone(user, userId);
@@ -70,6 +72,10 @@ class SQSProcessorService {
         return this._handleVoteCreation(postId, vote);
       case Events.newReport:
         return this._handleReportCreation(postId, report);
+      case Events.rewardUserUpdatePoints:
+        return this._handleRewardUserUpdatePoints(user, userId);
+      case Events.rewardPostPointsUpdatePoints:
+        return this._handleRewardPostPointsUpdate(postPoints);
       default:
         console.warn(`Unhandled event type: ${EVENT_TYPE}`);
         break;
@@ -99,6 +105,26 @@ class SQSProcessorService {
       await ReportService.reportPost(postId, report);
     } catch (error) {
       console.error('_handleVoteCreation-error', error);
+      throw error;
+    }
+  }
+
+  private static async _handleRewardUserUpdatePoints(user: any, userId: string) {
+    try {
+      console.log('Admin service SQS _handleRewardUserUpdatePoints user:', user);
+      await UserService.updatePointsSNS(user, userId);
+    } catch (error) {
+      console.error('_handleRewardUserUpdatePoints-error', error);
+      throw error;
+    }
+  }
+
+  private static async _handleRewardPostPointsUpdate(postPoints: IPostPointsSchema) {
+    try {
+      console.log('Admin service SQS _handleRewardPostPointsUpdate postPoints:', postPoints);
+      await PointsService.initPostPoints(postPoints);
+    } catch (error) {
+      console.error('_handleRewardUserUpdatePoints-error', error);
       throw error;
     }
   }

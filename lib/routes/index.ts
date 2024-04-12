@@ -10,7 +10,7 @@ import {
   blockUser,
   newAdmin, postId,
   updateAdmin,
-  updatePost,
+  updatePost, updateUserPoints,
   validateErrors,
 } from './RequestValidations';
 import { authenticateAdminOrSuperAdmin } from '../middlewares/authMiddleware';
@@ -35,11 +35,20 @@ function getRouter() {
   router.get('/api/admin/logout', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, isBlocked, tokenBlacklist, AdminServiceController.adminLogut]);
 
   // Get Users
+  // @ts-ignore
   router.get('/api/admin/users', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, isBlocked, tokenBlacklist, AdminServiceController.getUsers]);
 
   // Block User
   // @ts-ignore
   router.put('/api/admin/user/block', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, blockUser(), validateErrors, AdminServiceController.blockUser]);
+
+  // Update User Post points
+  // @ts-ignore
+  router.put('/api/admin/user/post/points', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, updateUserPoints(), validateErrors, AdminServiceController.updateUserPostPoints]);
+
+  // Get User Posts Points
+  // @ts-ignore
+  router.get('/api/admin/user/:userId/posts/points', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, AdminServiceController.getUserPostsPoints]);
 
   // Get Posts
   // @ts-ignore
