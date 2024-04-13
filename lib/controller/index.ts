@@ -33,13 +33,13 @@ class AdminServiceController {
   }
 
   public static adminLogin(req: Request, res: Response) {
-    const { matchedData: { email, password } } = req.body;
-    return AdminService.login(email, password, res);
+    const { matchedData: { email, password, superAdmin } } = req.body;
+    return AdminService.login(email, password, superAdmin, res);
   }
 
   public static adminLogut(req: RequestInterferedByIsSuperAdmin, res: Response) {
-    const { userId, accessToken } = req.user;
-    return AdminService.logout(userId, accessToken, res);
+    const { accessToken } = req.user;
+    return AdminService.logout(accessToken, res);
   }
 
   /* public static verifyAdmin(req: Request, res: Response) {

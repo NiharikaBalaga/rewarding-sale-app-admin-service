@@ -73,7 +73,13 @@ const adminLogin = () => {
       .notEmpty()
       .escape()
       .isString()
-      .withMessage('Password is required')];
+      .withMessage('Password is required'),
+    body('superAdmin')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isBoolean()
+      .withMessage('superAdmin is required')];
 };
 
 const updateAdmin = () => {

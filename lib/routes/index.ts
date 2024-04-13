@@ -86,7 +86,7 @@ function getRouter() {
 
   // Get Admins
   // @ts-ignore
-  router.get('/api/admin/', [authenticateAdminOrSuperAdmin, isAdminOrSuperAdmin, AdminServiceController.getAdmins]);
+  router.get('/api/admin/', [passport.authenticate('jwt-access-super-admin', { session: false }), AdminServiceController.getAdmins]);
 
   // Create Admin
   router.post('/api/admin/sadmin/admin', [passport.authenticate('jwt-access-super-admin', { session: false }),
