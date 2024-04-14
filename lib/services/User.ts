@@ -4,6 +4,7 @@ import type { Response } from 'express';
 import { UserStatus } from '../DB/Models/user-status.enum';
 import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
 import type mongoose from 'mongoose';
+import { SNSService } from './SNS';
 
 class UserService {
 
@@ -95,10 +96,9 @@ class UserService {
         isBlocked: blockUser
       });
 
-      // TODO: Check how to implement Aws
       // SNS event
-      /* if (updatedUser)
-        Aws.userUpdatedEvent(updatedUser);*/
+      if (updatedUser)
+        SNSService.updateUser(updatedUser);
 
       // send updated serialised user in response
       if (updatedUser) {
@@ -120,8 +120,6 @@ class UserService {
       return res.status(httpCodes.serverError).send('Server Error, Please try again later');
     }
   }
-
-  // TODO add unblock user
 }
 
 export {

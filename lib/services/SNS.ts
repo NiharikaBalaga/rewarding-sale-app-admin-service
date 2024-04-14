@@ -3,6 +3,7 @@ import type { PublishCommandInput } from '@aws-sdk/client-sns';
 import type { IUser } from '../DB/Models/User';
 import type { IPostPointsSchema } from '../DB/Models/Post-points.schema';
 import { Events } from './events.enum';
+import { IPost } from '../DB/Models/Post';
 
 
 class SNSService {
@@ -41,7 +42,7 @@ class SNSService {
     }
   }
 
-  private static async _publishToRewardTopicARN(Message: string) { // groupId should be POST ID of reward
+  private static async _publishToAdminTopicARN(Message: string) {
     try {
       const messageParams: PublishCommandInput = {
         Message,
@@ -52,11 +53,11 @@ class SNSService {
         new PublishCommand(messageParams),
       );
       console.log('SNSService MessageId: ', MessageId);
-      console.log('_publishToRewardTopicARN-success', MessageId);
-    } catch (_publishToRewardTopicARNError) {
+      console.log('_publishToAdminTopicARN-success', MessageId);
+    } catch (_publishToAdminTopicARN) {
       console.error(
-        '_publishToRewardTopicARNError',
-        _publishToRewardTopicARNError,
+        '_publishToAdminTopicARN',
+        _publishToAdminTopicARN,
       );
     }
   }
@@ -68,7 +69,7 @@ class SNSService {
     const EVENT_TYPE = Events.rewardUserUpdatePoints;
     const snsMessage = Object.assign({ user }, { EVENT_TYPE, userId: user.id });
     console.log(`Publishing ${EVENT_TYPE} to Reward Topic`);
-    return this._publishToRewardTopicARN(JSON.stringify(snsMessage));
+    return this._publishToAdminTopicARN(JSON.stringify(snsMessage));
   }
 
   static async updatePostPointsRewards(postPoints: IPostPointsSchema) {
@@ -76,8 +77,26 @@ class SNSService {
     // console.log('SNSService reward.id: ', postPoints.postId);
     const EVENT_TYPE = Events.rewardPostPointsUpdatePoints;
     const snsMessage = Object.assign({ postPoints }, { EVENT_TYPE });
-    console.log(`Publishing ${EVENT_TYPE} to Reward Topic`);
-    return this._publishToRewardTopicARN(JSON.stringify(snsMessage));
+    console.log(`Publishing ${EVENT_TYPE} to Admin Topic`);
+    return this._publishToAdminTopicARN(JSON.stringify(snsMessage));
+  }
+
+  static async updateUser(user: IUser) {
+    console.log('SNSService updateUser user: ', user);
+    console.log('SNSService updateUser user.id: ', user.id);
+    const EVENT_TYPE = Events.userUpdated;
+    const snsMessage = Object.assign({ user }, { EVENT_TYPE, userId: user.id });
+    console.log(`Publishing ${EVENT_TYPE} to Admin Topic`);
+    return this._publishToAdminTopicARN(JSON.stringify(snsMessage));
+  }
+
+  static async updatePost(post: IPost) {
+    console.log('SNSService updatePost post: ', post);
+    console.log('SNSService updateUser post.id: ', post.id);
+    const EVENT_TYPE = Events.postUpdated;
+    const snsMessage = Object.assign({ post }, { EVENT_TYPE, postId: post.id });
+    console.log(`Publishing ${EVENT_TYPE} to Admin Topic`);
+    return this._publishToAdminTopicARN(JSON.stringify(snsMessage));
   }
 }
 
