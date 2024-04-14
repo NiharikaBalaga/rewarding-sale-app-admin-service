@@ -52,8 +52,8 @@ class AdminServiceController {
   }
 
   public static blockUser(req: RequestInterferedByIsSuperAdmin, res: Response) {
-    const { userId } = req.body.matchedData;
-    return UserService.blockUser(userId, res);
+    const { userId, blockUser } = req.body.matchedData;
+    return UserService.blockUser(userId, blockUser, res);
   }
 
   public static updateUserPostPoints(req: RequestInterferedByIsSuperAdmin, res: Response) {
@@ -81,7 +81,8 @@ class AdminServiceController {
   public static blockPost(req: Request, res: Response) {
     const { matchedData } = req.body;
     const postId = matchedData.postId;
-    return PostService.blockPost(postId, res);
+    const blockPost = matchedData.blockPost;
+    return PostService.blockPost(postId, blockPost, res);
   }
 
   public static getAdmins(req: RequestInterferedByIsSuperAdmin, res: Response) {
@@ -110,8 +111,8 @@ class AdminServiceController {
   }
 
   public static blockAdmin(req: RequestInterferedByIsSuperAdmin, res: Response) {
-    const { adminId } = req.body.matchedData;
-    return SuperAdminService.blockAdmin(adminId, res);
+    const { adminId, blockAdmin } = req.body.matchedData;
+    return SuperAdminService.blockAdmin(adminId, blockAdmin, res);
   }
 
   public static deleteAdmin(req: RequestInterferedByIsSuperAdmin, res: Response) {

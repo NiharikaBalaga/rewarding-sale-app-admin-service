@@ -22,6 +22,19 @@ class AdminService {
     });
   }
 
+  static async findByPhoneNumber(phoneNumber: string) {
+    return AdminModel.findOne({
+      phoneNumber
+    });
+  }
+
+  static async findByEmailAndPhoneNumber(email: string, phoneNumber: string) {
+    return AdminModel.findOne({
+      email,
+      phoneNumber
+    });
+  }
+
   static async addTokenInBlackList(accessToken: string) {
     const blackListToken = new UserTokenBlacklistModel({
       token: accessToken,
@@ -37,8 +50,23 @@ class AdminService {
 
   static async create(email: string, firstName: string, lastName: string, phoneNumber: string) {
     try {
-      const existingAdmin = await this.findByEmail(email);
-      if (existingAdmin) throw new Error('Admin Exists Already');
+      const existingAdmin = await this.findByEmailAndPhoneNumber(email, phoneNumber);
+      if (existingAdmin) {
+        if (!existingAdmin.signedUp)
+          throw new Error('Admin Exists Already without set up');
+        else
+          throw new Error('Admin Exists Already with set up');
+      }
+
+      const existingEmail = await this.findByEmail(email);
+      const existingPhoneNumber = await this.findByPhoneNumber(phoneNumber);
+      if (existingEmail && existingPhoneNumber)
+        throw new Error('Email and Phone Separate');
+      else if (existingEmail)
+        throw new Error('Admin already exists with a different phone number');
+      else if (existingPhoneNumber)
+        throw new Error('Phone number already exists with a different email');
+
       const randomPassword = (Math.random() + 1).toString(36).substring(7);
       const hashedRandomPassword = await argon2.hash(randomPassword);
       const admin = new AdminModel({
@@ -114,7 +142,6 @@ class AdminService {
 
   static async login(email: string, password: string, superAdmin: boolean, res: Response) {
     try {
-      console.log('typeof before superAdmin', typeof superAdmin);
       // Check if superAdmin is a string and convert it to a boolean if necessary
       if (typeof superAdmin === 'string')
         // @ts-ignore
@@ -133,7 +160,6 @@ class AdminService {
       console.log('email', email);
       console.log('password', password);
       console.log('superAdmin', superAdmin);
-      console.log('typeof after superAdmin', typeof superAdmin);
       console.log('--------------------------------------------');
       console.log('');
 
@@ -150,6 +176,9 @@ class AdminService {
 
         console.log(fullName);
 
+        if (admin.isBlocked)
+          return res.status(httpCodes.badRequest).send('Your account have been blocked');
+
         if (!admin.signedUp && !superAdmin)
           return res.status(httpCodes.badRequest).send('Please Setup Account Before Login');
         const passwordMatches = await argon2.verify(
@@ -164,10 +193,11 @@ class AdminService {
         return res.status(httpCodes.ok).send({
           fullName,
           accessToken,
+          superAdmin
         });
 
       } else {
-        return res.status(httpCodes.badRequest).send('User Does not exist');
+        return res.status(httpCodes.badRequest).send('Admin email does not exist');
       }
     } catch (error) {
       console.error('login-Admin-service-error', error);

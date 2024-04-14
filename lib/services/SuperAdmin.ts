@@ -2,9 +2,10 @@ import SuperAdminModel from '../DB/Models/SuperAdmin';
 import type { Response } from 'express';
 import { httpCodes } from '../constants/http-status-code';
 import { AdminService } from './Admin';
-import mongoose from 'mongoose';
+import type mongoose from 'mongoose';
 import { AdminStatus } from '../DB/Models/admin-status.enum';
-import AdminModel, { IAdmin } from '../DB/Models/Admin';
+import type { IAdmin } from '../DB/Models/Admin';
+import AdminModel from '../DB/Models/Admin';
 
 class SuperAdminService {
   static async findById(id: string) {
@@ -16,8 +17,17 @@ class SuperAdminService {
       await AdminService.create(email, firstName, lastName, phoneNumber);
       return res.send('New Admin Created');
     } catch (error) {
-      if (error.message === 'Admin Exists Already')
-        return res.status(httpCodes.badRequest).send('Admin Exists Already');
+      console.log('error.message: ', error.message);
+      if (error.message === 'Admin Exists Already without set up')
+        return res.status(httpCodes.badRequest).send('Admin Exists Already without set up');
+      if (error.message === 'Admin Exists Already with set up')
+        return res.status(httpCodes.badRequest).send('Admin Exists Already with set up');
+      if (error.message === 'Email and Phone Separate')
+        return res.status(httpCodes.badRequest).send('Email and Phone Separate');
+      if (error.message === 'Admin already exists with a different phone number')
+        return res.status(httpCodes.badRequest).send('Admin already exists with a different phone number');
+      if (error.message === 'Phone number already exists with a different email')
+        return res.status(httpCodes.badRequest).send('Phone number already exists with a different email');
       console.error('createNewAdmin-superAdmin-service-error', error);
       return res.status(httpCodes.serverError).send('Server Error');
     }
@@ -64,7 +74,7 @@ class SuperAdminService {
 
       // TODO: Check how to implement Aws
       // SNS event
-      /*if (updatedAdmin)
+      /* if (updatedAdmin)
         Aws.adminUpdatedEvent(updatedAdmin);*/
 
       // send updated serialised admin in response
@@ -89,18 +99,21 @@ class SuperAdminService {
 
   }
 
-  static async blockAdmin(adminId: string, res: Response) {
+  static async blockAdmin(adminId: string, blockAdmin: boolean, res: Response) {
     try {
+      // Check if blockAdmin is a string and convert it to a boolean if necessary
+      if (typeof blockAdmin === 'string')
+        // @ts-ignore
+        blockAdmin = (blockAdmin.toLowerCase() === 'true');
 
       // Updates isBlocked field to true
       const updatedAdmin = await this._update(adminId, {
-        isBlocked: true,
-        signedUp: false
+        isBlocked: blockAdmin,
       });
 
       // TODO: Check how to implement Aws
       // SNS event
-      /*if (updatedAdmin)
+      /* if (updatedAdmin)
         Aws.adminUpdatedEvent(updatedAdmin);*/
 
       // send updated serialised admin in response

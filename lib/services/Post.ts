@@ -99,13 +99,19 @@ class PostService {
 
   }
 
-  static async blockPost(postId: string, res: Response) {
+  static async blockPost(postId: string, blockPost: boolean, res: Response) {
     try {
+      // Check if blockPost is a string and convert it to a boolean if necessary
+      if (typeof blockPost === 'string')
+      // @ts-ignore
+        blockPost = (blockPost.toLowerCase() === 'true');
+
+      const postStatus = blockPost ? PostStatus.blocked : PostStatus.published;
 
       // Updates isActive field to false and status field to POST_BLOCKED
       const updatedPost = await this._update(postId, {
-        isActive: false,
-        status: PostStatus.blocked
+        isActive: !blockPost,
+        status: postStatus
       });
 
       // TODO: Check how to implement Aws

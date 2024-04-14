@@ -119,7 +119,23 @@ const updateAdmin = () => {
       .isString()];
 };
 
-const blockDeleteAdmin = () => {
+const blockAdmin = () => {
+  return [
+    body('adminId')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isString()
+      .withMessage('Admin ID is required'),
+    body('blockAdmin')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isBoolean()
+      .withMessage('blockAdmin is required')];
+};
+
+const deleteAdmin = () => {
   return [
     body('adminId')
       .trim()
@@ -129,6 +145,7 @@ const blockDeleteAdmin = () => {
       .withMessage('Admin ID is required')];
 };
 
+
 const blockUser = () => {
   return [
     body('userId')
@@ -136,7 +153,13 @@ const blockUser = () => {
       .notEmpty()
       .escape()
       .isString()
-      .withMessage('User ID is required')];
+      .withMessage('User ID is required'),
+    body('blockUser')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isBoolean()
+      .withMessage('blockUser is required')];
 };
 
 const updateUserPoints = () => {
@@ -180,7 +203,13 @@ const blockPost = () => {
       .notEmpty()
       .escape()
       .isString()
-      .withMessage('Post ID is required')];
+      .withMessage('Post ID is required'),
+    body('blockPost')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isBoolean()
+      .withMessage('blockPost is required')];
 };
 
 const updatePost = () => {
@@ -262,4 +291,4 @@ const validateErrors = (req: Request, res: Response, next: NextFunction) => {
 };
 
 
-export { validateErrors, newAdmin, adminSetup, adminLogin, updateAdmin, blockDeleteAdmin, blockUser, blockPost, updatePost, postId, updateUserPoints };
+export { validateErrors, newAdmin, adminSetup, adminLogin, updateAdmin, blockAdmin, deleteAdmin, blockUser, blockPost, updatePost, postId, updateUserPoints };

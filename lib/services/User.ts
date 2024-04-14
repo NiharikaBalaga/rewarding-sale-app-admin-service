@@ -83,12 +83,16 @@ class UserService {
     }
   }
 
-  static async blockUser(userId: string, res: Response) {
+  static async blockUser(userId: string, blockUser: boolean, res: Response) {
     try {
+      // Check if blockUser is a string and convert it to a boolean if necessary
+      if (typeof blockUser === 'string')
+      // @ts-ignore
+        blockUser = (blockUser.toLowerCase() === 'true');
 
       // Updates isBlocked field to true
       const updatedUser = await this._update(userId, {
-        isBlocked: true
+        isBlocked: blockUser
       });
 
       // TODO: Check how to implement Aws

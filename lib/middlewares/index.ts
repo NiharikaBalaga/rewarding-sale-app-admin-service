@@ -2,7 +2,6 @@ import type { Request, Response, NextFunction } from 'express';
 import { AdminService } from '../services/Admin';
 import { SuperAdminService } from '../services/SuperAdmin';
 import { httpCodes } from '../constants/http-status-code';
-import { UserService } from '../services/User';
 
 async function isAdminOrSuperAdmin(req: Request, res: Response, next: NextFunction) {
   try {
@@ -13,11 +12,12 @@ async function isAdminOrSuperAdmin(req: Request, res: Response, next: NextFuncti
 
     let user = await AdminService.findById(userId);
 
-    if (!user || user.isBlocked) {
+    if (!user) {
       // @ts-ignore
       user = await SuperAdminService.findById(userId);
       if (!user || user.isBlocked) return res.sendStatus(401);
     } else {
+      if (user.isBlocked) return res.sendStatus(401);
       if (!user.signedUp) return res.status(httpCodes.badRequest).send('Please Complete Signup First');
     }
 
@@ -51,26 +51,6 @@ async function isSuperAdmin(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function isBlocked(req: Request, res: Response, next: NextFunction) {
-  try {
-    // @ts-ignore
-    const userId = req.user?.userId;
-
-    if (!userId) return res.sendStatus(401);
-
-    const user = await AdminService.findById(userId);
-
-    if (!user || user.isBlocked) return res.sendStatus(401);
-
-    // @ts-ignore
-    req['currentUser'] = user;
-    next();
-  } catch (error) {
-    console.error('Error in IsBlockedGuard:', error);
-    res.sendStatus(500);
-  }
-}
-
 async function tokenBlacklist(req: Request, res: Response, next: NextFunction) {
   try {
     // @ts-ignore
@@ -90,6 +70,5 @@ async function tokenBlacklist(req: Request, res: Response, next: NextFunction) {
 export  {
   isAdminOrSuperAdmin,
   isSuperAdmin,
-  isBlocked,
   tokenBlacklist
 };
