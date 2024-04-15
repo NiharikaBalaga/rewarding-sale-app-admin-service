@@ -4,6 +4,7 @@ import type { Response } from 'express';
 import { UserStatus } from '../DB/Models/user-status.enum';
 import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
 import type mongoose from 'mongoose';
+import { SNSService } from './SNS';
 
 class UserService {
 
@@ -83,18 +84,21 @@ class UserService {
     }
   }
 
-  static async blockUser(userId: string, res: Response) {
+  static async blockUser(userId: string, blockUser: boolean, res: Response) {
     try {
+      // Check if blockUser is a string and convert it to a boolean if necessary
+      if (typeof blockUser === 'string')
+      // @ts-ignore
+        blockUser = (blockUser.toLowerCase() === 'true');
 
       // Updates isBlocked field to true
       const updatedUser = await this._update(userId, {
-        isBlocked: true
+        isBlocked: blockUser
       });
 
-      // TODO: Check how to implement Aws
       // SNS event
-      /* if (updatedUser)
-        Aws.userUpdatedEvent(updatedUser);*/
+      if (updatedUser)
+        SNSService.updateUser(updatedUser);
 
       // send updated serialised user in response
       if (updatedUser) {
@@ -116,8 +120,6 @@ class UserService {
       return res.status(httpCodes.serverError).send('Server Error, Please try again later');
     }
   }
-
-  // TODO add unblock user
 }
 
 export {

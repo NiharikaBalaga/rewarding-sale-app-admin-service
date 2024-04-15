@@ -5,6 +5,7 @@ import type { Response } from 'express';
 import { httpCodes } from '../constants/http-status-code';
 import type { IAdmin } from '../DB/Models/Admin';
 import { PostStatus } from '../DB/Models/post-status.enum';
+import { SNSService } from './SNS';
 
 class PostService {
 
@@ -71,10 +72,9 @@ class PostService {
         ...postObject
       });
 
-      // TODO: Check how to implement Aws
       // SNS event
-      /* if (updatedPost)
-              Aws.adminUpdatedEvent(updatedPost);*/
+      if (updatedPost)
+        SNSService.updatePost(updatedPost);
 
       // send updated serialised post in response
       if (updatedPost) {
@@ -99,19 +99,38 @@ class PostService {
 
   }
 
-  static async blockPost(postId: string, res: Response) {
+  static async blockPost(postId: string, blockPost: boolean, res: Response) {
     try {
+      // Check if blockPost is a string and convert it to a boolean if necessary
+      if (typeof blockPost === 'string')
+        // @ts-ignore
+        blockPost = (blockPost.toLowerCase() === 'true');
 
-      // Updates isActive field to false and status field to POST_BLOCKED
-      const updatedPost = await this._update(postId, {
-        isActive: false,
-        status: PostStatus.blocked
-      });
+      const postStatus = blockPost ? PostStatus.blocked : PostStatus.published;
 
-      // TODO: Check how to implement Aws
+      // Prepares the update object
+      const updateObject = {
+        isActive: !blockPost,
+        status: postStatus
+      };
+
+      // If statement to add or remove blocked reason
+      if (blockPost) {
+        // If blocking the post, add a reason
+        // @ts-ignore
+        updateObject.postBlockedReason = 'Post Blocked due to admin block';
+      } else {
+        // If unblocking the post, remove the reason
+        // @ts-ignore
+        updateObject.$unset = { postBlockedReason: '' };
+      }
+
+      // Updates post
+      const updatedPost = await this._update(postId, updateObject);
+
       // SNS event
-      /* if (updatedPost)
-              Aws.userUpdatedEvent(updatedPost);*/
+      if (updatedPost)
+        SNSService.updatePost(updatedPost);
 
       if (updatedPost) {
         return res.send({

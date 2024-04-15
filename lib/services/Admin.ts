@@ -8,6 +8,7 @@ import PostModel from '../DB/Models/Post';
 import VoteModel from '../DB/Models/Vote';
 import ReportModel from '../DB/Models/Report';
 import UserTokenBlacklistModel from '../DB/Models/User-Token-Blacklist';
+import SuperAdminModel from '../DB/Models/SuperAdmin';
 
 class AdminService {
 
@@ -18,6 +19,19 @@ class AdminService {
   static async findByEmail(email: string) {
     return AdminModel.findOne({
       email
+    });
+  }
+
+  static async findByPhoneNumber(phoneNumber: string) {
+    return AdminModel.findOne({
+      phoneNumber
+    });
+  }
+
+  static async findByEmailAndPhoneNumber(email: string, phoneNumber: string) {
+    return AdminModel.findOne({
+      email,
+      phoneNumber
     });
   }
 
@@ -34,26 +48,25 @@ class AdminService {
     });
   }
 
-  public static async logout(userId: string, accessToken: string, res: Response) {
-    try {
-      // add current access token into blacklist collection, so we won't allow this token anymore - check tokenBlacklist middleware
-      const blackListToken = new UserTokenBlacklistModel({
-        token: accessToken
-      });
-
-      await blackListToken.save();
-
-      return res.send('Logout Success');
-    } catch (logoutError){
-      console.error('logout-AdminService', logoutError);
-      return  res.sendStatus(httpCodes.serverError);
-    }
-  }
-
   static async create(email: string, firstName: string, lastName: string, phoneNumber: string) {
     try {
-      const existingAdmin = await this.findByEmail(email);
-      if (existingAdmin) throw new Error('Admin Exists Already');
+      const existingAdmin = await this.findByEmailAndPhoneNumber(email, phoneNumber);
+      if (existingAdmin) {
+        if (!existingAdmin.signedUp)
+          throw new Error('Admin Exists Already without set up');
+        else
+          throw new Error('Admin Exists Already with set up');
+      }
+
+      const existingEmail = await this.findByEmail(email);
+      const existingPhoneNumber = await this.findByPhoneNumber(phoneNumber);
+      if (existingEmail && existingPhoneNumber)
+        throw new Error('Email and Phone Separate');
+      else if (existingEmail)
+        throw new Error('Admin already exists with a different phone number');
+      else if (existingPhoneNumber)
+        throw new Error('Phone number already exists with a different email');
+
       const randomPassword = (Math.random() + 1).toString(36).substring(7);
       const hashedRandomPassword = await argon2.hash(randomPassword);
       const admin = new AdminModel({
@@ -127,22 +140,46 @@ class AdminService {
     }
   }
 
-  static async login(email: string, password: string, res: Response) {
+  static async login(email: string, password: string, superAdmin: boolean, res: Response) {
     try {
+      // Check if superAdmin is a string and convert it to a boolean if necessary
+      if (typeof superAdmin === 'string')
+        // @ts-ignore
+        superAdmin = (superAdmin.toLowerCase() === 'true');
 
-      const admin = await AdminModel.findOne({
+
+      const model = superAdmin ? SuperAdminModel : AdminModel;
+      // @ts-ignore
+      const admin = await model.findOne({
         email
       });
 
       console.log('login');
+      console.log('model: ', model);
       console.log('admin', admin);
       console.log('email', email);
       console.log('password', password);
+      console.log('superAdmin', superAdmin);
       console.log('--------------------------------------------');
       console.log('');
 
+      let fullName = '';
       if (admin) {
-        if (!admin.signedUp)
+        // Assuming you have the admin object
+        const { firstName, lastName } = admin;
+
+        // Capitalizes the first letter of a string
+        const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+        // Concatenates the capitalized first name and last name
+        fullName = `${capitalize(firstName)} ${capitalize(lastName)}`;
+
+        console.log(fullName);
+
+        if (admin.isBlocked)
+          return res.status(httpCodes.badRequest).send('Your account have been blocked');
+
+        if (!admin.signedUp && !superAdmin)
           return res.status(httpCodes.badRequest).send('Please Setup Account Before Login');
         const passwordMatches = await argon2.verify(
           admin.password,
@@ -152,17 +189,35 @@ class AdminService {
         if (!passwordMatches)
           return res.status(httpCodes.badRequest).send('Wrong Password');
 
-        const { accessToken } = await TokenService.getAdminToken(admin.id, admin.phoneNumber);
+        const { accessToken } = superAdmin ? await TokenService.getSuperAdminToken(admin.id, admin.phoneNumber) : await TokenService.getAdminToken(admin.id, admin.phoneNumber);
         return res.status(httpCodes.ok).send({
-          accessToken
+          fullName,
+          accessToken,
+          superAdmin
         });
 
       } else {
-        return res.status(httpCodes.badRequest).send('User Does not exist');
+        return res.status(httpCodes.badRequest).send('Admin email does not exist');
       }
     } catch (error) {
       console.error('login-Admin-service-error', error);
       return res.status(httpCodes.serverError).send('Server Error');
+    }
+  }
+
+  public static async logout(accessToken: string, res: Response) {
+    try {
+      // add current access token into blacklist collection, so we won't allow this token anymore - check tokenBlacklist middleware
+      const blackListToken = new UserTokenBlacklistModel({
+        token: accessToken
+      });
+
+      await blackListToken.save();
+
+      return res.send('Logout Success');
+    } catch (logoutError){
+      console.error('logout-AdminService', logoutError);
+      return  res.sendStatus(httpCodes.serverError);
     }
   }
 
